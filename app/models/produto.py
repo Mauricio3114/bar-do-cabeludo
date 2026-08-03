@@ -82,6 +82,19 @@ class Produto(db.Model):
     # OPERAÇÃO
     # =====================================================
 
+    # =====================================================
+    # DESTINO DO PREPARO
+    # =====================================================
+
+    destino_preparo = db.Column(
+        db.String(30),
+        nullable=False,
+        default="sem_preparo"
+    )
+    # churrasqueira
+    # cozinha
+    # sem_preparo
+
     ativo = db.Column(
         db.Boolean,
         nullable=False,
