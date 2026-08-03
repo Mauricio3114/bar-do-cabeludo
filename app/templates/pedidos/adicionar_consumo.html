@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Adicionar Consumo | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #f4f5f7;
+            color: #171717;
+
+            padding-bottom: 105px;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        /* ================================================
+           TOPO
+        ================================================ */
+
+        .topbar {
+            min-height: 62px;
+
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 9px 15px;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .voltar {
+            color: #fff;
+
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .top-info {
+            text-align: right;
+        }
+
+        .top-info strong {
+            display: block;
+
+            font-size: 14px;
+        }
+
+        .top-info small {
+            display: block;
+
+            margin-top: 2px;
+
+            color: #c7bdb7;
+
+            font-size: 9px;
+        }
+
+        /* ================================================
+           CONTAINER
+        ================================================ */
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+
+            margin: 0 auto;
+
+            padding: 16px 12px;
+        }
+
+        .titulo {
+            margin-bottom: 13px;
+        }
+
+        .titulo h1 {
+            font-size: 23px;
+        }
+
+        .titulo p {
+            margin-top: 4px;
+
+            color: #777;
+
+            font-size: 10px;
+        }
+
+        /* ================================================
+           ALERTA
+        ================================================ */
+
+        .alert {
+            padding: 11px 12px;
+
+            margin-bottom: 11px;
+
+            border-radius: 9px;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* ================================================
+           TOTAL ATUAL
+        ================================================ */
+
+        .total-atual {
+            background: #17100c;
+            color: #fff;
+
+            border-radius: 13px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .total-atual small {
+            display: block;
+
+            color: #c7bdb7;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .total-atual strong {
+            font-size: 20px;
+        }
+
+        /* ================================================
+           SEÇÃO
+        ================================================ */
+
+        .secao {
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            margin-bottom: 11px;
+        }
+
+        .secao-header {
+            padding: 11px 12px;
+
+            border-bottom: 1px solid #eee;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .secao-header h2 {
+            font-size: 12px;
+        }
+
+        .secao-header small {
+            color: #888;
+
+            font-size: 9px;
+        }
+
+        .lista {
+            padding: 8px;
+        }
+
+        /* ================================================
+           PRODUTO
+        ================================================ */
+
+        .produto {
+            min-height: 58px;
+
+            border: 1px solid #eee;
+
+            border-radius: 9px;
+
+            padding: 8px 9px;
+
+            margin-bottom: 6px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .produto:last-child {
+            margin-bottom: 0;
+        }
+
+        .produto-info {
+            min-width: 0;
+        }
+
+        .produto-info strong {
+            display: block;
+
+            font-size: 11px;
+        }
+
+        .produto-info small {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #777;
+
+            font-size: 9px;
+        }
+
+        /* ================================================
+           QUANTIDADE
+        ================================================ */
+
+        .quantidade {
+            display: flex;
+            align-items: center;
+
+            gap: 5px;
+
+            flex-shrink: 0;
+        }
+
+        .quantidade button {
+            width: 34px;
+            height: 34px;
+
+            border: 0;
+
+            border-radius: 8px;
+
+            background: #eee;
+
+            cursor: pointer;
+
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .quantidade input {
+            width: 37px;
+            height: 34px;
+
+            border: 0;
+
+            text-align: center;
+
+            background: transparent;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        /* ================================================
+           VAZIO
+        ================================================ */
+
+        .vazio {
+            padding: 13px;
+
+            color: #999;
+
+            font-size: 10px;
+        }
+
+        /* ================================================
+           RODAPÉ
+        ================================================ */
+
+        .rodape {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            background: #fff;
+
+            border-top: 1px solid #ddd;
+
+            padding: 9px 12px;
+
+            z-index: 200;
+        }
+
+        .rodape-inner {
+            width: 100%;
+            max-width: 760px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+        }
+
+        .novo-total small {
+            display: block;
+
+            color: #777;
+
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+        .novo-total strong {
+            display: block;
+
+            margin-top: 2px;
+
+            font-size: 19px;
+        }
+
+        .btn-confirmar {
+            min-height: 49px;
+
+            padding: 0 17px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            background: #b45309;
+            color: #fff;
+
+            cursor: pointer;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        /* ================================================
+           MOBILE
+        ================================================ */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding-bottom: 90px;
+            }
+
+            .topbar {
+                min-height: 57px;
+
+                padding: 8px 10px;
+            }
+
+            .container {
+                padding: 11px 8px;
+            }
+
+            .titulo h1 {
+                font-size: 20px;
+            }
+
+            .total-atual {
+                padding: 11px 12px;
+            }
+
+            .produto {
+                min-height: 54px;
+
+                padding: 7px 8px;
+            }
+
+            .rodape {
+                padding: 7px 8px;
+            }
+
+            .btn-confirmar {
+                min-height: 47px;
+
+                padding: 0 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+    <a
+        href="{{
+            url_for(
+                'pedidos.detalhes',
+                pedido_id=pedido.id
+            )
+        }}"
+        class="voltar"
+    >
+        ← Pedido
+    </a>
+
+
+    <div class="top-info">
+
+        <strong>
+
+            {% if pedido.mesa %}
+                {{ pedido.mesa.nome }}
+            {% else %}
+                Marmitex
+            {% endif %}
+
+        </strong>
+
+        <small>
+            Pedido #{{ pedido.id }}
+        </small>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <div class="titulo">
+
+        <h1>
+            Adicionar Consumo
+        </h1>
+
+        <p>
+            Acrescente itens à conta sem encerrar o pedido.
+        </p>
+
+    </div>
+
+
+    <div class="total-atual">
+
+        <small>
+            CONTA ATUAL
+        </small>
+
+        <strong>
+            R$
+            {{
+                "{:,.2f}".format(
+                    pedido.total
+                )
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+            }}
+        </strong>
+
+    </div>
+
+
+    <form method="POST">
+
+
+        <!-- ============================================
+             ADICIONAIS / CARNES
+        ============================================= -->
+
+        <section class="secao">
+
+            <div class="secao-header">
+
+                <h2>
+                    🥩 Carnes / Adicionais
+                </h2>
+
+                <small>
+                    Opcional
+                </small>
+
+            </div>
+
+
+            {% if adicionais %}
+
+                <div class="lista">
+
+                    {% for produto in adicionais %}
+
+                        <div class="produto">
+
+                            <div class="produto-info">
+
+                                <strong>
+                                    {{ produto.nome }}
+                                </strong>
+
+                                <small>
+
+                                    R$
+                                    {{
+                                        "{:,.2f}".format(
+                                            produto.preco_adicional
+                                        )
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+
+                                    {% if produto.unidade_adicional %}
+                                        / {{ produto.unidade_adicional }}
+                                    {% endif %}
+
+                                </small>
+
+                            </div>
+
+
+                            <div class="quantidade">
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'adicional_{{ produto.id }}',
+                                        -1
+                                    )"
+                                >
+                                    −
+                                </button>
+
+                                <input
+                                    type="number"
+                                    id="adicional_{{ produto.id }}"
+                                    name="adicional_{{ produto.id }}"
+                                    value="0"
+                                    min="0"
+                                    readonly
+                                    class="item-consumo"
+                                    data-preco="{{ produto.preco_adicional }}"
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'adicional_{{ produto.id }}',
+                                        1
+                                    )"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="vazio">
+                    Nenhum adicional cadastrado.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ============================================
+             BEBIDAS
+        ============================================= -->
+
+        {% if bebidas %}
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        🥤 Bebidas
+                    </h2>
+
+                    <small>
+                        Opcional
+                    </small>
+
+                </div>
+
+
+                <div class="lista">
+
+                    {% for produto in bebidas %}
+
+                        <div class="produto">
+
+                            <div class="produto-info">
+
+                                <strong>
+                                    {{ produto.nome }}
+                                </strong>
+
+                                <small>
+
+                                    R$
+                                    {{
+                                        "{:,.2f}".format(
+                                            produto.preco
+                                        )
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+
+                                </small>
+
+                            </div>
+
+
+                            <div class="quantidade">
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'produto_{{ produto.id }}',
+                                        -1
+                                    )"
+                                >
+                                    −
+                                </button>
+
+                                <input
+                                    type="number"
+                                    id="produto_{{ produto.id }}"
+                                    name="produto_{{ produto.id }}"
+                                    value="0"
+                                    min="0"
+                                    readonly
+                                    class="item-consumo"
+                                    data-preco="{{ produto.preco }}"
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'produto_{{ produto.id }}',
+                                        1
+                                    )"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+
+        <!-- ============================================
+             SOBREMESAS
+        ============================================= -->
+
+        {% if sobremesas %}
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        🍮 Sobremesas
+                    </h2>
+
+                    <small>
+                        Opcional
+                    </small>
+
+                </div>
+
+
+                <div class="lista">
+
+                    {% for produto in sobremesas %}
+
+                        <div class="produto">
+
+                            <div class="produto-info">
+
+                                <strong>
+                                    {{ produto.nome }}
+                                </strong>
+
+                                <small>
+
+                                    R$
+                                    {{
+                                        "{:,.2f}".format(
+                                            produto.preco
+                                        )
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+
+                                </small>
+
+                            </div>
+
+
+                            <div class="quantidade">
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'produto_{{ produto.id }}',
+                                        -1
+                                    )"
+                                >
+                                    −
+                                </button>
+
+                                <input
+                                    type="number"
+                                    id="produto_{{ produto.id }}"
+                                    name="produto_{{ produto.id }}"
+                                    value="0"
+                                    min="0"
+                                    readonly
+                                    class="item-consumo"
+                                    data-preco="{{ produto.preco }}"
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'produto_{{ produto.id }}',
+                                        1
+                                    )"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+
+        <!-- ============================================
+             OUTROS
+        ============================================= -->
+
+        {% if outros %}
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        Outros
+                    </h2>
+
+                    <small>
+                        Opcional
+                    </small>
+
+                </div>
+
+
+                <div class="lista">
+
+                    {% for produto in outros %}
+
+                        <div class="produto">
+
+                            <div class="produto-info">
+
+                                <strong>
+                                    {{ produto.nome }}
+                                </strong>
+
+                                <small>
+
+                                    R$
+                                    {{
+                                        "{:,.2f}".format(
+                                            produto.preco
+                                        )
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+
+                                </small>
+
+                            </div>
+
+
+                            <div class="quantidade">
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'produto_{{ produto.id }}',
+                                        -1
+                                    )"
+                                >
+                                    −
+                                </button>
+
+                                <input
+                                    type="number"
+                                    id="produto_{{ produto.id }}"
+                                    name="produto_{{ produto.id }}"
+                                    value="0"
+                                    min="0"
+                                    readonly
+                                    class="item-consumo"
+                                    data-preco="{{ produto.preco }}"
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick="alterar(
+                                        'produto_{{ produto.id }}',
+                                        1
+                                    )"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+
+        <!-- ============================================
+             RODAPÉ
+        ============================================= -->
+
+        <div class="rodape">
+
+            <div class="rodape-inner">
+
+                <div class="novo-total">
+
+                    <small>
+                        NOVO TOTAL
+                    </small>
+
+                    <strong id="novoTotal">
+                        R$ 0,00
+                    </strong>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-confirmar"
+                >
+                    + CONFIRMAR ADIÇÃO
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </form>
+
+
+</main>
+
+
+<script>
+
+    const totalAtual =
+        Number(
+            "{{ pedido.total or 0 }}"
+        );
+
+
+    function valorNumero(valor) {
+
+        const numero =
+            parseFloat(valor);
+
+        if (isNaN(numero)) {
+            return 0;
+        }
+
+        return numero;
+
+    }
+
+
+    function alterar(id, diferenca) {
+
+        const input =
+            document.getElementById(id);
+
+        let quantidade =
+            parseInt(
+                input.value || 0
+            );
+
+        quantidade += diferenca;
+
+        if (quantidade < 0) {
+            quantidade = 0;
+        }
+
+        input.value =
+            quantidade;
+
+        calcular();
+
+    }
+
+
+    function calcular() {
+
+        let adicional = 0;
+
+        document
+            .querySelectorAll(
+                ".item-consumo"
+            )
+            .forEach(function(input) {
+
+                adicional +=
+                    valorNumero(
+                        input.dataset.preco
+                    )
+                    *
+                    valorNumero(
+                        input.value
+                    );
+
+            });
+
+
+        const novoTotal =
+            totalAtual + adicional;
+
+
+        document
+            .getElementById(
+                "novoTotal"
+            )
+            .textContent =
+                novoTotal.toLocaleString(
+                    "pt-BR",
+                    {
+                        style: "currency",
+                        currency: "BRL"
+                    }
+                );
+
+    }
+
+
+    calcular();
+
+</script>
+
+
+</body>
+
+</html>

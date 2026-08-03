@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Pedido #{{ pedido.id }} | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #171717;
+            padding-bottom: 105px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* ==================================================
+           TOPO
+        ================================================== */
+
+        .topbar {
+            min-height: 64px;
+
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 10px 18px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .voltar {
+            color: #fff;
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .top-info {
+            text-align: right;
+        }
+
+        .top-info strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .top-info small {
+            color: #c7bdb7;
+            font-size: 9px;
+        }
+
+        /* ==================================================
+           CONTEÚDO
+        ================================================== */
+
+        .container {
+            max-width: 760px;
+
+            margin: 0 auto;
+
+            padding: 17px 13px;
+        }
+
+        /* ==================================================
+           ALERTAS
+        ================================================== */
+
+        .alert {
+            padding: 11px 13px;
+
+            margin-bottom: 12px;
+
+            border-radius: 10px;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* ==================================================
+           HEADER DO PEDIDO
+        ================================================== */
+
+        .pedido-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 13px;
+        }
+
+        .pedido-header h1 {
+            font-size: 24px;
+        }
+
+        .pedido-header p {
+            color: #777;
+
+            margin-top: 3px;
+
+            font-size: 10px;
+        }
+
+        .status {
+            padding: 8px 10px;
+
+            border-radius: 9px;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            white-space: nowrap;
+        }
+
+        .status-churrasqueira {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .status-cozinha {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-servido {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .status-fechamento {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .status-finalizado {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* ==================================================
+           CARD
+        ================================================== */
+
+        .card {
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            margin-bottom: 11px;
+        }
+
+        .card-header {
+            padding: 11px 13px;
+
+            border-bottom: 1px solid #eee;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+        }
+
+        /* ==================================================
+           ITENS
+        ================================================== */
+
+        .item {
+            padding: 13px;
+
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item:last-child {
+            border-bottom: 0;
+        }
+
+        .item-principal {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 12px;
+        }
+
+        .item-nome strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .item-nome small {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #777;
+
+            font-size: 9px;
+        }
+
+        .item-valor {
+            flex-shrink: 0;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        /* ==================================================
+           ACOMPANHAMENTOS
+        ================================================== */
+
+        .acompanhamentos {
+            margin-top: 9px;
+
+            padding: 9px 10px;
+
+            background: #f8fafc;
+
+            border-radius: 9px;
+        }
+
+        .acompanhamentos small {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #777;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+        }
+
+        .acompanhamento {
+            display: inline-flex;
+
+            margin:
+                0 4px
+                4px 0;
+
+            padding: 5px 7px;
+
+            border-radius: 7px;
+
+            background: #ecfdf5;
+            color: #166534;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        /* ==================================================
+           RESUMO
+        ================================================== */
+
+        .resumo {
+            padding: 13px;
+        }
+
+        .linha-total {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .linha-total span {
+            color: #666;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .linha-total strong {
+            font-size: 20px;
+        }
+
+        /* ==================================================
+           FLUXO
+        ================================================== */
+
+        .fluxo {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 6px;
+
+            padding: 12px;
+        }
+
+        .etapa {
+            min-height: 57px;
+
+            border-radius: 9px;
+
+            background: #f1f5f9;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 6px;
+
+            color: #94a3b8;
+        }
+
+        .etapa strong {
+            font-size: 9px;
+        }
+
+        .etapa small {
+            margin-top: 3px;
+            font-size: 8px;
+        }
+
+        .etapa.ativa-churrasqueira {
+            background: #fff7ed;
+            color: #c2410c;
+
+            border: 1px solid #fed7aa;
+        }
+
+        .etapa.ativa-cozinha {
+            background: #eff6ff;
+            color: #1d4ed8;
+
+            border: 1px solid #bfdbfe;
+        }
+
+        .etapa.ativa-servido {
+            background: #f5f3ff;
+            color: #6d28d9;
+
+            border: 1px solid #ddd6fe;
+        }
+
+        /* ==================================================
+           RODAPÉ OPERACIONAL
+        ================================================== */
+
+        .rodape {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            background: #fff;
+
+            border-top: 1px solid #ddd;
+
+            padding: 10px 13px;
+
+            z-index: 200;
+        }
+
+        .rodape-inner {
+            max-width: 760px;
+
+            margin: 0 auto;
+        }
+
+        .btn-acao {
+            width: 100%;
+            min-height: 53px;
+
+            border: 0;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            color: #fff;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .btn-carne {
+            background: #c2410c;
+        }
+
+        .btn-servir {
+            background: #6d28d9;
+        }
+
+        .acoes-servido {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn-adicionar-consumo {
+    min-height: 50px;
+    border-radius: 12px;
+
+    background: #17100c !important;
+    color: #ffffff !important;
+
+    border: 1px solid #17100c;
+
+    text-decoration: none !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 16px;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+    transition: 0.15s ease;
+}
+
+.btn-adicionar-consumo:hover,
+.btn-adicionar-consumo:focus,
+.btn-adicionar-consumo:visited {
+    background: #17100c !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+.btn-adicionar-consumo:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 600px) {
+
+    .acoes-servido {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .btn-adicionar-consumo {
+        min-height: 46px;
+    }
+
+}
+
+        .aguardando {
+            width: 100%;
+
+            min-height: 53px;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .aguardando-cozinha {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .aguardando-servido {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        /* ==================================================
+           MOBILE
+        ================================================== */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding-bottom: 92px;
+            }
+
+            .topbar {
+                min-height: 57px;
+                padding: 8px 10px;
+            }
+
+            .container {
+                padding: 12px 9px;
+            }
+
+            .pedido-header h1 {
+                font-size: 20px;
+            }
+
+            .status {
+                padding: 7px 8px;
+                font-size: 8px;
+            }
+
+            .item {
+                padding: 11px;
+            }
+
+            .fluxo {
+                padding: 9px;
+            }
+
+            .etapa {
+                min-height: 52px;
+            }
+
+            .rodape {
+                padding: 8px 9px;
+            }
+
+            .btn-acao,
+            .aguardando {
+                min-height: 50px;
+            }
+
+        }
+
+       /* ==================================================
+   PEDIR CONTA
+================================================== */
+
+.acoes-servido form {
+    margin: 0;
+    width: 100%;
+}
+
+.btn-pedir-conta {
+    width: 100%;
+    min-height: 50px;
+
+    border: none !important;
+    outline: none;
+
+    border-radius: 12px;
+
+    background: #b45309 !important;
+    color: #ffffff !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 16px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+    font-weight: 900;
+    font-family: inherit;
+
+    text-transform: uppercase;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.btn-pedir-conta:hover,
+.btn-pedir-conta:focus {
+    background: #92400e !important;
+}
+
+.btn-pedir-conta:active {
+    transform: scale(.98);
+}
+
+
+/* ==================================================
+   FECHAMENTO / PAGAMENTO
+================================================== */
+
+.form-fechamento {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin: 0;
+}
+
+
+/* FORMAS DE PAGAMENTO */
+
+.pagamento-opcoes {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 7px;
+}
+
+
+/* REMOVE RADIO PADRÃO */
+
+.pagamento-item {
+    display: block;
+
+    margin: 0;
+
+    cursor: pointer;
+}
+
+.pagamento-item input {
+    position: absolute;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* CARD DA FORMA */
+
+.pagamento-item span {
+    width: 100%;
+    min-height: 47px;
+
+    border: 2px solid #e2e8f0;
+    border-radius: 11px;
+
+    background: #f8fafc;
+    color: #334155;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    text-align: center;
+
+    user-select: none;
+
+    transition:
+        background .15s ease,
+        color .15s ease,
+        border-color .15s ease,
+        transform .15s ease;
+}
+
+
+/* SELECIONADO */
+
+.pagamento-item input:checked + span {
+    background: #17100c !important;
+    color: #ffffff !important;
+
+    border-color: #17100c !important;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0,0,0,.12);
+}
+
+.pagamento-item:active span {
+    transform: scale(.97);
+}
+
+
+/* ==================================================
+   CONFIRMAR PAGAMENTO
+================================================== */
+
+.btn-finalizar {
+    width: 100%;
+    min-height: 52px;
+
+    border: none !important;
+    outline: none;
+
+    border-radius: 12px;
+
+    background: #16a34a !important;
+    color: #ffffff !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 14px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    box-shadow:
+        0 3px 10px
+        rgba(22,163,74,.18);
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.btn-finalizar:hover,
+.btn-finalizar:focus {
+    background: #15803d !important;
+}
+
+.btn-finalizar:active {
+    transform: scale(.98);
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (max-width: 600px) {
+
+    .btn-pedir-conta {
+        min-height: 48px;
+    }
+
+    .pagamento-opcoes {
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 6px;
+    }
+
+    .pagamento-item span {
+        min-height: 43px;
+
+        font-size: 10px;
+    }
+
+    .btn-finalizar {
+        min-height: 49px;
+
+        font-size: 10px;
+    }
+
+}
+
+    </style>
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+    <a
+        href="{{ url_for('mesas.listar') }}"
+        class="voltar"
+    >
+        ← Mesas
+    </a>
+
+
+    <div class="top-info">
+
+        <strong>
+
+            {% if pedido.tipo_atendimento == "mesa" %}
+
+                {{ pedido.mesa.nome }}
+
+            {% else %}
+
+                Marmitex #{{ pedido.numero_marmitex }}
+
+            {% endif %}
+
+        </strong>
+
+        <small>
+            Pedido #{{ pedido.id }}
+        </small>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ==================================================
+         CABEÇALHO
+    =================================================== -->
+
+    <div class="pedido-header">
+
+        <div>
+
+            <h1>
+                Pedido #{{ pedido.id }}
+            </h1>
+
+            <p>
+                Garçom: {{ pedido.usuario.nome }}
+            </p>
+
+        </div>
+
+
+        <span
+            class="status status-{{ pedido.status }}"
+        >
+
+            {% if pedido.status == "churrasqueira" %}
+                🔥 Churrasqueira
+
+            {% elif pedido.status == "cozinha" %}
+                🍚 Cozinha
+
+            {% elif pedido.status == "servido" %}
+
+                {% if pedido.tipo_atendimento == "marmitex" %}
+                    ✓ Marmitex Pronto
+                {% else %}
+                    ✓ Servido
+                {% endif %}
+
+            {% elif pedido.status == "fechamento" %}
+                Fechamento
+
+            {% elif pedido.status == "finalizado" %}
+                Finalizado
+
+            {% else %}
+                {{ pedido.status }}
+            {% endif %}
+
+        </span>
+
+    </div>
+
+
+    <!-- ==================================================
+         FLUXO
+    =================================================== -->
+
+    <section class="card">
+
+        <div class="card-header">
+            Andamento
+        </div>
+
+
+        <div class="fluxo">
+
+            <div
+                class="
+                    etapa
+                    {% if pedido.status == 'churrasqueira' %}
+                        ativa-churrasqueira
+                    {% endif %}
+                "
+            >
+
+                <strong>
+                    🔥 CHURRASQUEIRA
+                </strong>
+
+                <small>
+                    Carne
+                </small>
+
+            </div>
+
+
+            <div
+                class="
+                    etapa
+                    {% if pedido.status == 'cozinha' %}
+                        ativa-cozinha
+                    {% endif %}
+                "
+            >
+
+                <strong>
+                    🍚 COZINHA
+                </strong>
+
+                <small>
+                    Acompanhamentos
+                </small>
+
+            </div>
+
+
+            <div
+                class="
+                    etapa
+                    {% if pedido.status == 'servido' %}
+                        ativa-servido
+                    {% endif %}
+                "
+            >
+
+                <strong>
+
+                    {% if pedido.tipo_atendimento == "marmitex" %}
+                        ✓ PRONTO
+                    {% else %}
+                        ✓ SERVIDO
+                    {% endif %}
+
+                </strong>
+
+                <small>
+
+                    {% if pedido.tipo_atendimento == "marmitex" %}
+                        Marmitex
+                    {% else %}
+                        Mesa
+                    {% endif %}
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         ITENS
+    =================================================== -->
+
+    <section class="card">
+
+        <div class="card-header">
+            Itens do Pedido
+        </div>
+
+
+        {% for item in pedido.itens %}
+
+            <div class="item">
+
+                <div class="item-principal">
+
+                    <div class="item-nome">
+
+                        <strong>
+
+                            {{ item.quantidade }}x
+                            {{ item.produto.nome }}
+
+                        </strong>
+
+
+                        <small>
+
+                            {% if item.tipo_item == "adicional" %}
+
+                                Adicional
+
+                                {% if item.produto.unidade_adicional %}
+                                    • {{ item.produto.unidade_adicional }}
+                                {% endif %}
+
+                            {% else %}
+
+                                Item do pedido
+
+                            {% endif %}
+
+                        </small>
+
+                    </div>
+
+
+                    <div class="item-valor">
+
+                        R$
+                        {{
+                            "{:,.2f}".format(
+                                item.valor_total
+                            )
+                            .replace(",", "X")
+                            .replace(".", ",")
+                            .replace("X", ".")
+                        }}
+
+                    </div>
+
+                </div>
+
+
+                {% if item.acompanhamentos %}
+
+                    <div class="acompanhamentos">
+
+                        <small>
+                            Acompanhamentos
+                        </small>
+
+
+                        {% for acompanhamento in item.acompanhamentos %}
+
+                            <span class="acompanhamento">
+                                ✓ {{ acompanhamento.produto.nome }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- ==================================================
+         TOTAL
+    =================================================== -->
+
+    <section class="card">
+
+        <div class="resumo">
+
+            <div class="linha-total">
+
+                <span>
+                    Total do pedido
+                </span>
+
+                <strong>
+
+                    R$
+                    {{
+                        "{:,.2f}".format(
+                            pedido.total
+                        )
+                        .replace(",", "X")
+                        .replace(".", ",")
+                        .replace("X", ".")
+                    }}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- ==================================================
+     AÇÃO OPERACIONAL
+=================================================== -->
+
+<div class="rodape">
+
+    <div class="rodape-inner">
+
+
+        {% if pedido.status == "churrasqueira" %}
+
+            <form
+                method="POST"
+                action="{{
+                    url_for(
+                        'pedidos.carne_pronta',
+                        pedido_id=pedido.id
+                    )
+                }}"
+            >
+
+                <button
+                    type="submit"
+                    class="btn-acao btn-carne"
+                >
+                    🔥 CARNE PRONTA / PEGUEI A CARNE
+                </button>
+
+            </form>
+
+
+        {% elif pedido.status == "cozinha" %}
+
+            <form
+                method="POST"
+                action="{{
+                    url_for(
+                        'pedidos.servir',
+                        pedido_id=pedido.id
+                    )
+                }}"
+            >
+
+                <button
+                    type="submit"
+                    class="btn-acao btn-servir"
+                >
+
+                    {% if pedido.tipo_atendimento == "marmitex" %}
+
+                        ✓ PEGUEI OS ACOMPANHAMENTOS / MARMITEX PRONTO
+
+                    {% else %}
+
+                        ✓ PEGUEI OS ACOMPANHAMENTOS / SERVIR MESA
+
+                    {% endif %}
+
+                </button>
+
+            </form>
+
+
+        {% elif pedido.status == "servido" %}
+
+            <div class="acoes-servido">
+
+                <a
+                    href="{{
+                        url_for(
+                            'pedidos.adicionar_consumo',
+                            pedido_id=pedido.id
+                        )
+                    }}"
+                    class="btn-adicionar-consumo"
+                >
+                    + ADICIONAR CONSUMO
+                </a>
+
+
+                <form
+                    method="POST"
+                    action="{{
+                        url_for(
+                            'pedidos.iniciar_fechamento',
+                            pedido_id=pedido.id
+                        )
+                    }}"
+                >
+
+                    <button
+                        type="submit"
+                        class="btn-pedir-conta"
+                    >
+                        💰 PEDIR CONTA
+                    </button>
+
+                </form>
+
+            </div>
+
+
+        {% elif pedido.status == "fechamento" %}
+
+            <form
+                method="POST"
+                action="{{
+                    url_for(
+                        'pedidos.finalizar',
+                        pedido_id=pedido.id
+                    )
+                }}"
+                class="form-fechamento"
+            >
+
+                <div class="pagamento-opcoes">
+
+                    <label class="pagamento-item">
+
+                        <input
+                            type="radio"
+                            name="forma_pagamento"
+                            value="dinheiro"
+                            required
+                        >
+
+                        <span>
+                            💵 Dinheiro
+                        </span>
+
+                    </label>
+
+
+                    <label class="pagamento-item">
+
+                        <input
+                            type="radio"
+                            name="forma_pagamento"
+                            value="pix"
+                            required
+                        >
+
+                        <span>
+                            PIX
+                        </span>
+
+                    </label>
+
+
+                    <label class="pagamento-item">
+
+                        <input
+                            type="radio"
+                            name="forma_pagamento"
+                            value="debito"
+                            required
+                        >
+
+                        <span>
+                            💳 Débito
+                        </span>
+
+                    </label>
+
+
+                    <label class="pagamento-item">
+
+                        <input
+                            type="radio"
+                            name="forma_pagamento"
+                            value="credito"
+                            required
+                        >
+
+                        <span>
+                            💳 Crédito
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-finalizar"
+                >
+                    ✓ CONFIRMAR PAGAMENTO — R$
+                    {{
+                        "{:,.2f}".format(
+                            pedido.total
+                        )
+                        .replace(",", "X")
+                        .replace(".", ",")
+                        .replace("X", ".")
+                    }}
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

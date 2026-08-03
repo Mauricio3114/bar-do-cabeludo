@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Painel | Bar do Cabeludo</title>
+
+    <!-- Atualização automática -->
+    <meta http-equiv="refresh" content="5">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            background: #0d0907;
+            color: #ffffff;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           TOPO
+        ===================================================== */
+
+        .topo {
+            min-height: 100px;
+
+            background: #180f0b;
+
+            border-bottom: 4px solid #b45309;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 16px 30px;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-painel {
+            width: 68px;
+            height: 68px;
+
+            border-radius: 15px;
+            object-fit: cover;
+
+            display: block;
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,.35);
+        }
+
+        .marca-texto h1 {
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .marca-texto p {
+            color: #c7b8ae;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .relogio {
+            text-align: right;
+        }
+
+        .relogio strong {
+            display: block;
+
+            font-size: 34px;
+            font-weight: 900;
+        }
+
+        .relogio small {
+            color: #b8aaa0;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           CONTEÚDO
+        ===================================================== */
+
+        .conteudo {
+            padding: 24px 28px 35px;
+        }
+
+
+        /* =====================================================
+           GRID DOS PEDIDOS
+        ===================================================== */
+
+        .grid-pedidos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 18px;
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .pedido {
+            position: relative;
+
+            min-height: 245px;
+
+            background: #211711;
+
+            border: 2px solid #39281f;
+            border-radius: 18px;
+
+            padding: 22px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            overflow: hidden;
+        }
+
+        .pedido.prioridade {
+            border: 3px solid #dc2626;
+        }
+
+        .pedido.prioridade::before {
+            content: "PRÓXIMO";
+
+            position: absolute;
+
+            top: 0;
+            right: 0;
+
+            background: #dc2626;
+            color: #ffffff;
+
+            padding: 7px 14px;
+
+            border-radius: 0 14px 0 12px;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+
+        /* =====================================================
+           CABEÇALHO DO CARD
+        ===================================================== */
+
+        .pedido-topo {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .ordem {
+            color: #d6c8be;
+
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .identificacao {
+            margin-top: 14px;
+        }
+
+        .identificacao strong {
+            display: block;
+
+            font-size: 38px;
+            line-height: 1;
+
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .identificacao small {
+            display: block;
+
+            color: #b8aaa0;
+
+            font-size: 13px;
+
+            margin-top: 8px;
+        }
+
+
+        /* =====================================================
+           INFORMAÇÕES
+        ===================================================== */
+
+        .informacoes {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                auto;
+
+            align-items: end;
+
+            gap: 15px;
+
+            margin-top: 25px;
+            margin-bottom: 16px;
+        }
+
+        .info-label {
+            display: block;
+
+            color: #8f8178;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            margin-bottom: 4px;
+        }
+
+        .garcom strong {
+            display: block;
+
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .hora {
+            text-align: right;
+        }
+
+        .hora strong {
+            display: block;
+
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+            width: 100%;
+            min-height: 62px;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 12px;
+
+            text-align: center;
+
+            font-size: 18px;
+            font-weight: 900;
+
+            letter-spacing: .2px;
+        }
+
+        .status-churrasqueira {
+            background: #c2410c;
+        }
+
+        .status-cozinha {
+            background: #2563eb;
+        }
+
+        .status-servido {
+            background: #7c3aed;
+        }
+
+        .status-fechamento {
+            background: #475569;
+        }
+
+
+        /* =====================================================
+           SEM PEDIDOS
+        ===================================================== */
+
+        .vazio {
+            min-height: calc(100vh - 140px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+        }
+
+        .vazio div {
+            color: #74675f;
+
+            font-size: 18px;
+        }
+
+        .vazio strong {
+            display: block;
+
+            color: #d0c1b7;
+
+            font-size: 42px;
+
+            margin-bottom: 10px;
+        }
+
+
+        /* =====================================================
+           TV MENOR / TABLET
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .grid-pedidos {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .logo-painel {
+                width: 52px;
+                height: 52px;
+                border-radius: 12px;
+            }
+
+            .marca-texto h1 {
+                font-size: 23px;
+            }
+
+            .marca-texto p {
+                font-size: 10px;
+            }
+
+            .topo {
+                min-height: 80px;
+                padding: 12px 16px;
+            }
+
+            .marca h1 {
+                font-size: 23px;
+            }
+
+            .marca p {
+                font-size: 10px;
+            }
+
+            .relogio strong {
+                font-size: 24px;
+            }
+
+            .relogio small {
+                display: none;
+            }
+
+            .conteudo {
+                padding: 14px;
+            }
+
+            .grid-pedidos {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .pedido {
+                min-height: 215px;
+
+                padding: 18px;
+            }
+
+            .identificacao strong {
+                font-size: 34px;
+            }
+
+            .status {
+                min-height: 56px;
+
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="topo">
+
+    <div class="marca">
+
+        <img
+            src="{{ url_for('static', filename='img/logo-cabeludo.png') }}"
+            alt="Bar do Cabeludo"
+            class="logo-painel"
+        >
+
+        <div class="marca-texto">
+
+            <h1>
+                Bar do Cabeludo
+            </h1>
+
+            <p>
+                Painel de Atendimento
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="relogio">
+
+        <strong id="horaAtual">
+            --:--
+        </strong>
+
+        <small>
+            atualização automática
+        </small>
+
+    </div>
+
+</header>
+
+
+<main class="conteudo">
+
+
+    {% if pedidos %}
+
+
+        <div class="grid-pedidos">
+
+
+            {% for pedido in pedidos %}
+
+
+                <div
+                    class="
+                        pedido
+                        {% if loop.first %}
+                            prioridade
+                        {% endif %}
+                    "
+                >
+
+
+                    <!-- =========================================
+                         TOPO
+                    ========================================== -->
+
+                    <div>
+
+
+                        <div class="pedido-topo">
+
+                            <div class="ordem">
+                                #{{ loop.index }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="identificacao">
+
+                            <strong>
+
+                                {% if pedido.tipo_atendimento == "marmitex" %}
+
+                                    🥡 Marmitex
+                                    #{{ pedido.numero_marmitex }}
+
+                                {% else %}
+
+                                    Mesa
+                                    {{ "%02d"|format(pedido.mesa.numero) }}
+
+                                {% endif %}
+
+                            </strong>
+
+
+                            <small>
+                                Pedido #{{ pedido.id }}
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =========================================
+                         GARÇOM + HORA
+                    ========================================== -->
+
+                    <div class="informacoes">
+
+
+                        <div class="garcom">
+
+                            <span class="info-label">
+                                Garçom
+                            </span>
+
+                            <strong>
+                                {{ pedido.usuario.nome }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="hora">
+
+                            <span class="info-label">
+                                Pedido
+                            </span>
+
+                            <strong>
+                                {{ (pedido.criado_em - timedelta(hours=3)).strftime("%H:%M") }}
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =========================================
+                         STATUS
+                    ========================================== -->
+
+                    <div>
+
+
+                        {% if pedido.status == "churrasqueira" %}
+
+                            <div
+                                class="
+                                    status
+                                    status-churrasqueira
+                                "
+                            >
+                                🔥 CHURRASQUEIRA
+                            </div>
+
+
+                        {% elif pedido.status == "cozinha" %}
+
+                            <div
+                                class="
+                                    status
+                                    status-cozinha
+                                "
+                            >
+                                🍚 COZINHA
+                            </div>
+
+
+                        {% elif pedido.status == "servido" %}
+
+                            <div
+                                class="
+                                    status
+                                    status-servido
+                                "
+                            >
+
+                                {% if pedido.tipo_atendimento == "marmitex" %}
+
+                                    ✓ MARMITEX PRONTO
+
+                                {% else %}
+
+                                    ✓ SERVIDO
+
+                                {% endif %}
+
+                            </div>
+
+
+                        {% elif pedido.status == "fechamento" %}
+
+                            <div
+                                class="
+                                    status
+                                    status-fechamento
+                                "
+                            >
+                                💰 FECHAMENTO
+                            </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="vazio">
+
+            <div>
+
+                <strong>
+                    ✓ Tudo tranquilo
+                </strong>
+
+                Nenhum atendimento ativo no momento.
+
+            </div>
+
+        </div>
+
+
+    {% endif %}
+
+
+</main>
+
+
+<script>
+
+    function atualizarRelogio() {
+
+        const agora =
+            new Date();
+
+        document
+            .getElementById("horaAtual")
+            .textContent =
+                agora.toLocaleTimeString(
+                    "pt-BR",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+    }
+
+
+    atualizarRelogio();
+
+
+    setInterval(
+        atualizarRelogio,
+        1000
+    );
+
+</script>
+
+
+</body>
+
+</html>

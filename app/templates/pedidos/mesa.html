@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ mesa.nome }} | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #171717;
+            padding-bottom: 100px;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        /* =================================================
+           TOPO
+        ================================================= */
+
+        .topbar {
+            min-height: 65px;
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 10px 18px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .voltar {
+            color: #fff;
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .mesa-topo {
+            text-align: right;
+        }
+
+        .mesa-topo strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .mesa-topo small {
+            color: #c7bdb7;
+            font-size: 10px;
+        }
+
+        /* =================================================
+           CONTAINER
+        ================================================= */
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 18px 14px;
+        }
+
+        .titulo {
+            margin-bottom: 15px;
+        }
+
+        .titulo h1 {
+            font-size: 24px;
+            margin-bottom: 3px;
+        }
+
+        .titulo p {
+            color: #777;
+            font-size: 11px;
+        }
+
+        /* =================================================
+           ALERTA
+        ================================================= */
+
+        .alert {
+            padding: 12px 13px;
+            border-radius: 10px;
+            margin-bottom: 13px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* =================================================
+           SEÇÕES
+        ================================================= */
+
+        .secao {
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 14px;
+
+            margin-bottom: 12px;
+
+            overflow: hidden;
+        }
+
+        .secao-header {
+            padding: 12px 14px;
+
+            border-bottom: 1px solid #eee;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .secao-header h2 {
+            font-size: 13px;
+        }
+
+        .secao-header small {
+            color: #888;
+            font-size: 9px;
+        }
+
+        .secao-body {
+            padding: 12px;
+        }
+
+        /* =================================================
+           CARNE PRINCIPAL
+        ================================================= */
+
+        .opcoes-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fill, minmax(150px, 1fr));
+
+            gap: 8px;
+        }
+
+        .opcao-radio input {
+            display: none;
+        }
+
+        .opcao-radio label {
+            min-height: 72px;
+
+            border: 2px solid #e5e7eb;
+
+            border-radius: 11px;
+
+            padding: 10px;
+
+            cursor: pointer;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            transition: .12s;
+        }
+
+        .opcao-radio label strong {
+            font-size: 12px;
+        }
+
+        .opcao-radio label span {
+            color: #666;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .opcao-radio input:checked + label {
+            border-color: #b45309;
+            background: #fff7ed;
+
+            box-shadow:
+                0 0 0 2px rgba(180,83,9,.08);
+        }
+
+        /* =================================================
+           ACOMPANHAMENTOS
+        ================================================= */
+
+        .checks-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fill, minmax(145px, 1fr));
+
+            gap: 7px;
+        }
+
+        .check-item input {
+            display: none;
+        }
+
+        .check-item label {
+            min-height: 43px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 9px;
+
+            padding: 8px 10px;
+
+            display: flex;
+            align-items: center;
+
+            cursor: pointer;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .check-item input:checked + label {
+            background: #ecfdf5;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .check-item input:checked + label::before {
+            content: "✓";
+            margin-right: 6px;
+            font-weight: 900;
+        }
+
+        /* =================================================
+           QUANTIDADE
+        ================================================= */
+
+        .quantidade-prato {
+            margin-top: 10px;
+
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .quantidade-prato label {
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .quantidade-prato input {
+            width: 70px;
+            height: 38px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+            font-weight: 800;
+        }
+
+        /* =================================================
+           ITENS COM + E -
+        ================================================= */
+
+        .lista-quantidades {
+            display: grid;
+            gap: 7px;
+        }
+
+        .linha-produto {
+            min-height: 55px;
+
+            border: 1px solid #eee;
+
+            border-radius: 10px;
+
+            padding: 8px 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .produto-info {
+            min-width: 0;
+        }
+
+        .produto-info strong {
+            display: block;
+
+            font-size: 11px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .produto-info small {
+            display: block;
+
+            color: #777;
+
+            margin-top: 3px;
+
+            font-size: 9px;
+        }
+
+        .controle-qtd {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+
+            flex-shrink: 0;
+        }
+
+        .controle-qtd button {
+            width: 32px;
+            height: 32px;
+
+            border: 0;
+
+            border-radius: 8px;
+
+            background: #eee;
+
+            cursor: pointer;
+
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .controle-qtd input {
+            width: 35px;
+            height: 32px;
+
+            border: 0;
+            background: transparent;
+
+            text-align: center;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        /* =================================================
+           VAZIO
+        ================================================= */
+
+        .vazio {
+            color: #999;
+            font-size: 11px;
+
+            padding: 5px;
+        }
+
+        /* =================================================
+           RODAPÉ
+        ================================================= */
+
+        .rodape-pedido {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            z-index: 200;
+
+            background: #fff;
+
+            border-top: 1px solid #ddd;
+
+            padding: 10px 14px;
+        }
+
+        .rodape-inner {
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+        }
+
+        .total small {
+            display: block;
+
+            color: #777;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .total strong {
+            display: block;
+
+            margin-top: 2px;
+
+            font-size: 21px;
+        }
+
+        .btn-enviar {
+            min-height: 48px;
+
+            padding: 0 22px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            background: #b45309;
+            color: #fff;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        /* =================================================
+           PEDIDO JÁ EXISTENTE
+        ================================================= */
+
+        .pedido-existente {
+            background: #fff;
+
+            border: 1px solid #fed7aa;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            text-align: center;
+        }
+
+        .pedido-existente h2 {
+            font-size: 18px;
+            margin-bottom: 7px;
+        }
+
+        .pedido-existente p {
+            color: #777;
+            font-size: 11px;
+        }
+
+        /* =================================================
+           MOBILE
+        ================================================= */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding-bottom: 90px;
+            }
+
+            .topbar {
+                min-height: 58px;
+                padding: 8px 11px;
+            }
+
+            .container {
+                padding: 12px 9px;
+            }
+
+            .titulo h1 {
+                font-size: 20px;
+            }
+
+            .opcoes-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .opcao-radio label {
+                min-height: 67px;
+                padding: 9px;
+            }
+
+            .checks-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .secao-body {
+                padding: 9px;
+            }
+
+            .linha-produto {
+                min-height: 52px;
+                padding: 7px 8px;
+            }
+
+            .rodape-pedido {
+                padding: 8px 10px;
+            }
+
+            .btn-enviar {
+                min-height: 46px;
+                padding: 0 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a
+        href="{{ url_for('mesas.listar') }}"
+        class="voltar"
+    >
+        ← Mesas
+    </a>
+
+    <div class="mesa-topo">
+
+        <strong>
+            {{ mesa.nome }}
+        </strong>
+
+        <small>
+            {{ current_user.nome }}
+        </small>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    {% if pedido %}
+
+        <div class="pedido-existente">
+
+            <h2>
+                🔥 Pedido em andamento
+            </h2>
+
+            <p>
+                Esta mesa já possui o Pedido
+                #{{ pedido.id }}.
+            </p>
+
+            <br>
+
+            <p>
+                Status:
+                <strong>
+                    {{ pedido.status|upper }}
+                </strong>
+            </p>
+
+        </div>
+
+    {% else %}
+
+        <div class="titulo">
+
+            <h1>
+                Novo Pedido
+            </h1>
+
+            <p>
+                Monte o pedido e envie para a churrasqueira.
+            </p>
+
+        </div>
+
+
+        <form
+            method="POST"
+            id="formPedido"
+        >
+
+            <!-- =========================================
+                 CARNE
+            ========================================== -->
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        🥩 Carne / Prato
+                    </h2>
+
+                    <small>
+                        Escolha 1
+                    </small>
+
+                </div>
+
+
+                <div class="secao-body">
+
+                    {% if carnes %}
+
+                        <div class="opcoes-grid">
+
+                            {% for produto in carnes %}
+
+                                <div class="opcao-radio">
+
+                                    <input
+                                        type="radio"
+                                        name="carne_id"
+                                        id="carne_{{ produto.id }}"
+                                        value="{{ produto.id }}"
+                                        data-preco="{{ produto.preco }}"
+                                        required
+                                    >
+
+                                    <label for="carne_{{ produto.id }}">
+
+                                        <strong>
+                                            {{ produto.nome }}
+                                        </strong>
+
+                                        <span>
+                                            R$
+                                            {{
+                                                "{:,.2f}".format(produto.preco)
+                                                .replace(",", "X")
+                                                .replace(".", ",")
+                                                .replace("X", ".")
+                                            }}
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="quantidade-prato">
+
+                            <label>
+                                Quantidade de pratos
+                            </label>
+
+                            <input
+                                type="number"
+                                id="quantidade_prato"
+                                name="quantidade_prato"
+                                min="1"
+                                value="1"
+                            >
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="vazio">
+                            Nenhuma carne cadastrada.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 ACOMPANHAMENTOS
+            ========================================== -->
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        🍚 Acompanhamentos
+                    </h2>
+
+                    <small>
+                        Marque o que o cliente quer
+                    </small>
+
+                </div>
+
+
+                <div class="secao-body">
+
+                    {% if acompanhamentos %}
+
+                        <div class="checks-grid">
+
+                            {% for produto in acompanhamentos %}
+
+                                <div class="check-item">
+
+                                    <input
+                                        type="checkbox"
+                                        name="acompanhamentos"
+                                        id="acomp_{{ produto.id }}"
+                                        value="{{ produto.id }}"
+                                    >
+
+                                    <label for="acomp_{{ produto.id }}">
+                                        {{ produto.nome }}
+                                    </label>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="vazio">
+                            Nenhum acompanhamento cadastrado.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 ADICIONAIS
+            ========================================== -->
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        ➕ Adicionais
+                    </h2>
+
+                    <small>
+                        Opcional
+                    </small>
+
+                </div>
+
+
+                <div class="secao-body">
+
+                    {% if adicionais %}
+
+                        <div class="lista-quantidades">
+
+                            {% for produto in adicionais %}
+
+                                <div class="linha-produto">
+
+                                    <div class="produto-info">
+
+                                        <strong>
+                                            {{ produto.nome }}
+                                        </strong>
+
+                                        <small>
+                                            R$
+                                            {{
+                                                "{:,.2f}".format(
+                                                    produto.preco_adicional
+                                                )
+                                                .replace(",", "X")
+                                                .replace(".", ",")
+                                                .replace("X", ".")
+                                            }}
+
+                                            {% if produto.unidade_adicional %}
+                                                / {{ produto.unidade_adicional }}
+                                            {% endif %}
+                                        </small>
+
+                                    </div>
+
+
+                                    <div class="controle-qtd">
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'adicional_{{ produto.id }}',
+                                                -1
+                                            )"
+                                        >
+                                            −
+                                        </button>
+
+                                        <input
+                                            type="number"
+                                            id="adicional_{{ produto.id }}"
+                                            name="adicional_{{ produto.id }}"
+                                            value="0"
+                                            min="0"
+                                            data-preco="{{ produto.preco_adicional }}"
+                                            class="item-valor"
+                                            readonly
+                                        >
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'adicional_{{ produto.id }}',
+                                                1
+                                            )"
+                                        >
+                                            +
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="vazio">
+                            Nenhum adicional disponível.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 BEBIDAS
+            ========================================== -->
+
+            {% if bebidas %}
+
+                <section class="secao">
+
+                    <div class="secao-header">
+
+                        <h2>
+                            🥤 Bebidas
+                        </h2>
+
+                        <small>
+                            Opcional
+                        </small>
+
+                    </div>
+
+
+                    <div class="secao-body">
+
+                        <div class="lista-quantidades">
+
+                            {% for produto in bebidas %}
+
+                                <div class="linha-produto">
+
+                                    <div class="produto-info">
+
+                                        <strong>
+                                            {{ produto.nome }}
+                                        </strong>
+
+                                        <small>
+                                            R$
+                                            {{
+                                                "{:,.2f}".format(produto.preco)
+                                                .replace(",", "X")
+                                                .replace(".", ",")
+                                                .replace("X", ".")
+                                            }}
+                                        </small>
+
+                                    </div>
+
+
+                                    <div class="controle-qtd">
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'produto_{{ produto.id }}',
+                                                -1
+                                            )"
+                                        >
+                                            −
+                                        </button>
+
+                                        <input
+                                            type="number"
+                                            id="produto_{{ produto.id }}"
+                                            name="produto_{{ produto.id }}"
+                                            value="0"
+                                            min="0"
+                                            data-preco="{{ produto.preco }}"
+                                            class="item-valor"
+                                            readonly
+                                        >
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'produto_{{ produto.id }}',
+                                                1
+                                            )"
+                                        >
+                                            +
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            {% endif %}
+
+
+            <!-- =========================================
+                 SOBREMESAS
+            ========================================== -->
+
+            {% if sobremesas %}
+
+                <section class="secao">
+
+                    <div class="secao-header">
+
+                        <h2>
+                            🍮 Sobremesas
+                        </h2>
+
+                        <small>
+                            Opcional
+                        </small>
+
+                    </div>
+
+
+                    <div class="secao-body">
+
+                        <div class="lista-quantidades">
+
+                            {% for produto in sobremesas %}
+
+                                <div class="linha-produto">
+
+                                    <div class="produto-info">
+
+                                        <strong>
+                                            {{ produto.nome }}
+                                        </strong>
+
+                                        <small>
+                                            R$
+                                            {{
+                                                "{:,.2f}".format(produto.preco)
+                                                .replace(",", "X")
+                                                .replace(".", ",")
+                                                .replace("X", ".")
+                                            }}
+                                        </small>
+
+                                    </div>
+
+
+                                    <div class="controle-qtd">
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'produto_{{ produto.id }}',
+                                                -1
+                                            )"
+                                        >
+                                            −
+                                        </button>
+
+                                        <input
+                                            type="number"
+                                            id="produto_{{ produto.id }}"
+                                            name="produto_{{ produto.id }}"
+                                            value="0"
+                                            min="0"
+                                            data-preco="{{ produto.preco }}"
+                                            class="item-valor"
+                                            readonly
+                                        >
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'produto_{{ produto.id }}',
+                                                1
+                                            )"
+                                        >
+                                            +
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            {% endif %}
+
+
+            <!-- =========================================
+                 OUTROS
+            ========================================== -->
+
+            {% if outros %}
+
+                <section class="secao">
+
+                    <div class="secao-header">
+
+                        <h2>
+                            Outros
+                        </h2>
+
+                        <small>
+                            Opcional
+                        </small>
+
+                    </div>
+
+
+                    <div class="secao-body">
+
+                        <div class="lista-quantidades">
+
+                            {% for produto in outros %}
+
+                                <div class="linha-produto">
+
+                                    <div class="produto-info">
+
+                                        <strong>
+                                            {{ produto.nome }}
+                                        </strong>
+
+                                        <small>
+                                            R$
+                                            {{
+                                                "{:,.2f}".format(produto.preco)
+                                                .replace(",", "X")
+                                                .replace(".", ",")
+                                                .replace("X", ".")
+                                            }}
+                                        </small>
+
+                                    </div>
+
+
+                                    <div class="controle-qtd">
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'produto_{{ produto.id }}',
+                                                -1
+                                            )"
+                                        >
+                                            −
+                                        </button>
+
+                                        <input
+                                            type="number"
+                                            id="produto_{{ produto.id }}"
+                                            name="produto_{{ produto.id }}"
+                                            value="0"
+                                            min="0"
+                                            data-preco="{{ produto.preco }}"
+                                            class="item-valor"
+                                            readonly
+                                        >
+
+                                        <button
+                                            type="button"
+                                            onclick="alterarQtd(
+                                                'produto_{{ produto.id }}',
+                                                1
+                                            )"
+                                        >
+                                            +
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            {% endif %}
+
+
+            <!-- =========================================
+                 RODAPÉ
+            ========================================== -->
+
+            <div class="rodape-pedido">
+
+                <div class="rodape-inner">
+
+                    <div class="total">
+
+                        <small>
+                            TOTAL DO PEDIDO
+                        </small>
+
+                        <strong id="totalPedido">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn-enviar"
+                    >
+                        🔥 Enviar Pedido
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    {% endif %}
+
+</main>
+
+
+<script>
+
+    function numero(valor) {
+
+        valor = parseFloat(valor);
+
+        if (isNaN(valor)) {
+            return 0;
+        }
+
+        return valor;
+
+    }
+
+
+    function alterarQtd(id, diferenca) {
+
+        const input =
+            document.getElementById(id);
+
+        let atual =
+            parseInt(input.value || 0);
+
+        atual += diferenca;
+
+        if (atual < 0) {
+            atual = 0;
+        }
+
+        input.value = atual;
+
+        calcularTotal();
+
+    }
+
+
+    function calcularTotal() {
+
+        let total = 0;
+
+        const carneSelecionada =
+            document.querySelector(
+                'input[name="carne_id"]:checked'
+            );
+
+        const quantidadePrato =
+            document.getElementById(
+                "quantidade_prato"
+            );
+
+        if (
+            carneSelecionada
+            && quantidadePrato
+        ) {
+
+            total +=
+                numero(
+                    carneSelecionada.dataset.preco
+                )
+                *
+                numero(
+                    quantidadePrato.value
+                );
+
+        }
+
+
+        document
+            .querySelectorAll(".item-valor")
+            .forEach(function(input) {
+
+                total +=
+                    numero(input.dataset.preco)
+                    *
+                    numero(input.value);
+
+            });
+
+
+        document.getElementById(
+            "totalPedido"
+        ).textContent =
+            total.toLocaleString(
+                "pt-BR",
+                {
+                    style: "currency",
+                    currency: "BRL"
+                }
+            );
+
+    }
+
+
+    document
+        .querySelectorAll(
+            'input[name="carne_id"]'
+        )
+        .forEach(function(input) {
+
+            input.addEventListener(
+                "change",
+                calcularTotal
+            );
+
+        });
+
+
+    const quantidadePrato =
+        document.getElementById(
+            "quantidade_prato"
+        );
+
+    if (quantidadePrato) {
+
+        quantidadePrato.addEventListener(
+            "input",
+            calcularTotal
+        );
+
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cardápio | Bar do Cabeludo</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #171717;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* =========================================
+           TOPO
+        ========================================= */
+
+        .topbar {
+            min-height: 68px;
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 10px 22px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            background: #332117;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 23px;
+        }
+
+        .brand h1 {
+            font-size: 17px;
+        }
+
+        .brand small {
+            display: block;
+            color: #c7bdb7;
+            margin-top: 2px;
+            font-size: 10px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-top {
+            min-height: 38px;
+
+            padding: 0 13px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+
+            background: #332117;
+            color: #fff;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* =========================================
+           CONTAINER
+        ========================================= */
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 22px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .page-header h2 {
+            font-size: 25px;
+            margin-bottom: 3px;
+        }
+
+        .page-header p {
+            color: #777;
+            font-size: 12px;
+        }
+
+        .btn-novo {
+            min-height: 46px;
+
+            padding: 0 18px;
+
+            border-radius: 11px;
+
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        /* =========================================
+           ALERTAS
+        ========================================= */
+
+        .alert {
+            padding: 11px 13px;
+
+            margin-bottom: 14px;
+
+            border-radius: 10px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* =========================================
+           KPIS
+        ========================================= */
+
+        .kpis {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 10px;
+
+            margin-bottom: 17px;
+        }
+
+        .kpi {
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 13px 15px;
+        }
+
+        .kpi small {
+            color: #777;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+        .kpi strong {
+            display: block;
+
+            margin-top: 4px;
+
+            font-size: 21px;
+        }
+
+        /* =========================================
+           PRODUTOS
+        ========================================= */
+
+        .card {
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            padding: 11px 13px;
+
+            background: #fafafa;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            text-align: left;
+
+            font-size: 9px;
+            color: #777;
+
+            text-transform: uppercase;
+        }
+
+        .table td {
+            padding: 12px 13px;
+
+            border-bottom: 1px solid #f0f0f0;
+
+            font-size: 12px;
+
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .produto-nome {
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .categoria {
+            display: inline-flex;
+
+            padding: 5px 8px;
+
+            border-radius: 7px;
+
+            background: #f3f4f6;
+
+            color: #4b5563;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .badge {
+            display: inline-flex;
+
+            padding: 5px 8px;
+
+            border-radius: 7px;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .badge-ativo {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-inativo {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .badge-adicional {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .acoes {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 5px;
+        }
+
+        .btn-editar,
+        .btn-status {
+            min-height: 32px;
+
+            padding: 0 10px;
+
+            border-radius: 8px;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .btn-editar {
+            background: #17100c;
+            color: #fff;
+
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-status {
+            border: 1px solid #d1d5db;
+            background: #fff;
+            color: #555;
+        }
+
+        .vazio {
+            padding: 45px 20px;
+
+            text-align: center;
+
+            color: #888;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                min-height: 60px;
+                padding: 8px 11px;
+            }
+
+            .brand-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .brand h1 {
+                font-size: 14px;
+            }
+
+            .btn-top {
+                min-height: 35px;
+                padding: 0 10px;
+                font-size: 9px;
+            }
+
+            .container {
+                padding: 13px 10px 25px;
+            }
+
+            .page-header h2 {
+                font-size: 20px;
+            }
+
+            .page-header p {
+                font-size: 10px;
+            }
+
+            .btn-novo {
+                min-height: 42px;
+                padding: 0 13px;
+                font-size: 10px;
+            }
+
+            .kpis {
+                gap: 7px;
+            }
+
+            .kpi {
+                padding: 10px;
+            }
+
+            .kpi strong {
+                font-size: 18px;
+            }
+
+            /*
+             * No celular transformamos a tabela
+             * em cards.
+             */
+
+            .table thead {
+                display: none;
+            }
+
+            .table,
+            .table tbody,
+            .table tr,
+            .table td {
+                display: block;
+                width: 100%;
+            }
+
+            .table tr {
+                padding: 12px;
+
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table td {
+                padding: 4px 0;
+                border: 0;
+            }
+
+            .acoes {
+                justify-content: flex-start;
+                margin-top: 7px;
+            }
+
+            .btn-editar,
+            .btn-status {
+                min-height: 35px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🔥
+            </div>
+
+            <div>
+
+                <h1>
+                    Bar do Cabeludo
+                </h1>
+
+                <small>
+                    Administração
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <a
+                href="{{ url_for('mesas.listar') }}"
+                class="btn-top"
+            >
+                ← Mesas
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Cardápio
+                </h2>
+
+                <p>
+                    Produtos disponíveis para atendimento
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('produtos.novo') }}"
+                class="btn-novo"
+            >
+                + Novo Produto
+            </a>
+
+        </div>
+
+
+        <div class="kpis">
+
+            <div class="kpi">
+
+                <small>
+                    Produtos
+                </small>
+
+                <strong>
+                    {{ total }}
+                </strong>
+
+            </div>
+
+
+            <div class="kpi">
+
+                <small>
+                    Ativos
+                </small>
+
+                <strong>
+                    {{ ativos }}
+                </strong>
+
+            </div>
+
+
+            <div class="kpi">
+
+                <small>
+                    Adicionais
+                </small>
+
+                <strong>
+                    {{ adicionais }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            {% if produtos %}
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Adicional</th>
+                            <th>Status</th>
+                            <th style="text-align:right;">
+                                Ações
+                            </th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for produto in produtos %}
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="produto-nome">
+                                        {{ produto.nome }}
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="categoria">
+                                        {{ produto.categoria.nome }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    R$
+                                    {{
+                                        "{:,.2f}".format(produto.preco)
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if produto.permite_adicional %}
+
+                                        <span class="badge badge-adicional">
+
+                                            R$
+                                            {{
+                                                "{:,.2f}".format(
+                                                    produto.preco_adicional
+                                                )
+                                                .replace(",", "X")
+                                                .replace(".", ",")
+                                                .replace("X", ".")
+                                            }}
+
+                                            {% if produto.unidade_adicional %}
+                                                / {{ produto.unidade_adicional }}
+                                            {% endif %}
+
+                                        </span>
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if produto.ativo %}
+
+                                        <span class="badge badge-ativo">
+                                            Ativo
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge badge-inativo">
+                                            Inativo
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="acoes">
+
+                                        <a
+                                            href="{{
+                                                url_for(
+                                                    'produtos.editar',
+                                                    produto_id=produto.id
+                                                )
+                                            }}"
+                                            class="btn-editar"
+                                        >
+                                            Editar
+                                        </a>
+
+
+                                        <form
+                                            method="POST"
+                                            action="{{
+                                                url_for(
+                                                    'produtos.alterar_status',
+                                                    produto_id=produto.id
+                                                )
+                                            }}"
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="btn-status"
+                                            >
+
+                                                {% if produto.ativo %}
+                                                    Desativar
+                                                {% else %}
+                                                    Ativar
+                                                {% endif %}
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="vazio">
+
+                    Nenhum produto cadastrado ainda.
+
+                    <br><br>
+
+                    Cadastre o primeiro produto do
+                    Bar do Cabeludo.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

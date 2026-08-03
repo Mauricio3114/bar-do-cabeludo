@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% if usuario %}
+            Editar Usuário
+        {% else %}
+            Novo Usuário
+        {% endif %}
+        | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            background: #f3f4f6;
+            color: #111827;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .topo {
+            min-height: 70px;
+
+            background: #180f0b;
+            color: white;
+
+            display: flex;
+            align-items: center;
+
+            padding: 12px 22px;
+        }
+
+        .topo a {
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+
+            margin: 0 auto;
+
+            padding: 25px 18px;
+        }
+
+        h1 {
+            margin: 0 0 5px;
+
+            font-size: 27px;
+        }
+
+        .subtitulo {
+            color: #6b7280;
+
+            font-size: 13px;
+
+            margin-bottom: 22px;
+        }
+
+        .flash {
+            padding: 12px 15px;
+
+            margin-bottom: 15px;
+
+            border-radius: 10px;
+
+            background: #fee2e2;
+            color: #991b1b;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+
+            padding: 22px;
+        }
+
+        .campo {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            min-height: 48px;
+
+            padding: 10px 12px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+
+            background: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #c65300;
+        }
+
+        .ajuda {
+            display: block;
+
+            color: #6b7280;
+
+            font-size: 10px;
+
+            margin-top: 5px;
+        }
+
+        .acoes {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                2fr;
+
+            gap: 10px;
+
+            margin-top: 22px;
+        }
+
+        .cancelar,
+        button {
+            min-height: 50px;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+            font-weight: 900;
+
+            text-decoration: none;
+        }
+
+        .cancelar {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+
+            background: #180f0b;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 18px 14px;
+            }
+
+            .card {
+                padding: 17px;
+            }
+
+            .acoes {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="topo">
+
+    <a href="{{ url_for('usuarios.listar') }}">
+        ← Usuários
+    </a>
+
+</header>
+
+
+<main class="container">
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for categoria, mensagem in messages %}
+
+                <div class="flash">
+                    {{ mensagem }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <h1>
+
+        {% if usuario %}
+            Editar Usuário
+        {% else %}
+            Novo Usuário
+        {% endif %}
+
+    </h1>
+
+
+    <div class="subtitulo">
+
+        {% if usuario %}
+
+            Altere os dados de acesso do colaborador.
+
+        {% else %}
+
+            Cadastre um administrador ou garçom.
+
+        {% endif %}
+
+    </div>
+
+
+    <form
+        method="POST"
+        class="card"
+    >
+
+
+        <div class="campo">
+
+            <label>
+                Nome
+            </label>
+
+            <input
+                type="text"
+                name="nome"
+                required
+                autocomplete="off"
+                value="{% if usuario %}{{ usuario.nome }}{% endif %}"
+                placeholder="Ex.: João"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                Usuário de acesso
+            </label>
+
+            <input
+                type="text"
+                name="usuario"
+                required
+                autocomplete="off"
+                value="{% if usuario %}{{ usuario.usuario }}{% endif %}"
+                placeholder="Ex.: joao"
+            >
+
+            <span class="ajuda">
+                Nome utilizado na tela de login.
+            </span>
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                Perfil
+            </label>
+
+            <select
+                name="perfil"
+                required
+            >
+
+                <option
+                    value="garcom"
+                    {% if not usuario or usuario.perfil == "garcom" %}
+                        selected
+                    {% endif %}
+                >
+                    Garçom
+                </option>
+
+                <option
+                    value="admin"
+                    {% if usuario and usuario.perfil == "admin" %}
+                        selected
+                    {% endif %}
+                >
+                    Administrador
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                {% if usuario %}
+                    Nova senha
+                {% else %}
+                    Senha
+                {% endif %}
+            </label>
+
+            <input
+                type="password"
+                name="senha"
+                {% if not usuario %}
+                    required
+                {% endif %}
+                autocomplete="new-password"
+                placeholder="
+                    {% if usuario %}
+                        Deixe vazio para manter a atual
+                    {% else %}
+                        Digite a senha
+                    {% endif %}
+                "
+            >
+
+            {% if usuario %}
+
+                <span class="ajuda">
+                    Só preencha se quiser alterar a senha.
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="acoes">
+
+            <a
+                href="{{ url_for('usuarios.listar') }}"
+                class="cancelar"
+            >
+                Cancelar
+            </a>
+
+            <button type="submit">
+
+                {% if usuario %}
+                    ✓ SALVAR ALTERAÇÕES
+                {% else %}
+                    + CADASTRAR USUÁRIO
+                {% endif %}
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+</main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mesas | Bar do Cabeludo</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #171717;
+            min-height: 100vh;
+        }
+
+        /* ==================================================
+           TOPO
+        ================================================== */
+
+        .topbar {
+            min-height: 70px;
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 12px 22px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .brand-fire {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #332117;
+
+            border-radius: 12px;
+
+            font-size: 23px;
+        }
+
+        .brand h1 {
+            font-size: 18px;
+            line-height: 1.1;
+        }
+
+        .brand small {
+            display: block;
+
+            color: #c7bdb7;
+
+            margin-top: 3px;
+
+            font-size: 11px;
+        }
+
+        .usuario {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .usuario-info {
+            text-align: right;
+        }
+
+        .usuario-info strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .menu-admin {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .menu-admin a {
+            color: #e8dfda;
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            padding: 8px 10px;
+
+            border-radius: 8px;
+
+            transition: .15s;
+        }
+
+        .menu-admin a:hover {
+            color: #fff;
+            background: #332117;
+        }
+
+        .menu-admin .menu-caixa {
+            background: #b45309;
+            color: #fff;
+        }
+
+        .menu-admin .menu-caixa:hover {
+            background: #92400e;
+        }
+
+        .menu-sair {
+            color: #fca5a5 !important;
+        }
+
+        /* ==================================================
+           CONTEÚDO
+        ================================================== */
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 22px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .page-title h2 {
+            font-size: 25px;
+            margin-bottom: 4px;
+        }
+
+        .page-title p {
+            color: #777;
+            font-size: 13px;
+        }
+
+        /* ==================================================
+           MARMITEX
+        ================================================== */
+
+        .btn-marmitex {
+            border: 0;
+
+            min-height: 52px;
+
+            padding: 0 22px;
+
+            border-radius: 13px;
+
+            background: #b45309;
+            color: #fff;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            box-shadow: 0 5px 15px rgba(180,83,9,.20);
+        }
+
+        /* ==================================================
+           LEGENDA
+        ================================================== */
+
+        .legenda {
+            background: #fff;
+
+            border: 1px solid #e6e6e6;
+
+            border-radius: 13px;
+
+            padding: 11px 14px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            color: #555;
+        }
+
+        .bolinha {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .bolinha.livre {
+            background: #16a34a;
+        }
+
+        .bolinha.churrasqueira {
+            background: #ea580c;
+        }
+
+        .bolinha.cozinha {
+            background: #2563eb;
+        }
+
+        .bolinha.servido {
+            background: #7c3aed;
+        }
+
+        .bolinha.fechamento {
+            background: #64748b;
+        }
+
+        /* ==================================================
+           GRID
+        ================================================== */
+
+        .mesas-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fill, minmax(145px, 1fr));
+
+            gap: 12px;
+        }
+
+        .mesa-card {
+            position: relative;
+
+            min-height: 125px;
+
+            background: #fff;
+
+            border: 2px solid #e5e7eb;
+
+            border-radius: 15px;
+
+            padding: 15px;
+
+            cursor: pointer;
+
+            transition: .15s;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            user-select: none;
+        }
+
+        .mesa-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 18px rgba(0,0,0,.08);
+        }
+
+        .mesa-numero {
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .mesa-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+        .mesa-status::before {
+            content: "";
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+        }
+
+        /* ==================================================
+           STATUS
+        ================================================== */
+
+        .status-livre {
+            border-color: #bbf7d0;
+        }
+
+        .status-livre .mesa-status {
+            color: #15803d;
+        }
+
+        .status-livre .mesa-status::before {
+            background: #16a34a;
+        }
+
+
+        .status-churrasqueira {
+            border-color: #fed7aa;
+            background: #fffaf5;
+        }
+
+        .status-churrasqueira .mesa-status {
+            color: #c2410c;
+        }
+
+        .status-churrasqueira .mesa-status::before {
+            background: #ea580c;
+        }
+
+
+        .status-cozinha {
+            border-color: #bfdbfe;
+            background: #f8fbff;
+        }
+
+        .status-cozinha .mesa-status {
+            color: #1d4ed8;
+        }
+
+        .status-cozinha .mesa-status::before {
+            background: #2563eb;
+        }
+
+
+        .status-servido {
+            border-color: #ddd6fe;
+            background: #fbfaff;
+        }
+
+        .status-servido .mesa-status {
+            color: #6d28d9;
+        }
+
+        .status-servido .mesa-status::before {
+            background: #7c3aed;
+        }
+
+
+        .status-fechamento {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+
+        .status-fechamento .mesa-status {
+            color: #475569;
+        }
+
+        .status-fechamento .mesa-status::before {
+            background: #64748b;
+        }
+
+        /* ==================================================
+           MOBILE
+        ================================================== */
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                min-height: 62px;
+                padding: 9px 13px;
+            }
+
+            .brand-fire {
+                width: 38px;
+                height: 38px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand small {
+                font-size: 9px;
+            }
+
+            .usuario-info {
+                display: none;
+            }
+
+            .menu-admin {
+                gap: 2px;
+            }
+
+            .menu-admin a {
+                padding: 7px 6px;
+                font-size: 9px;
+            }
+
+            .menu-admin a:nth-child(1),
+            .menu-admin a:nth-child(5) {
+                display: none;
+            }
+
+            .container {
+                padding: 14px 10px 25px;
+            }
+
+            .page-header {
+                align-items: stretch;
+                margin-bottom: 13px;
+            }
+
+            .page-title h2 {
+                font-size: 20px;
+            }
+
+            .page-title p {
+                font-size: 11px;
+            }
+
+            .btn-marmitex {
+                min-height: 47px;
+
+                padding: 0 15px;
+
+                border-radius: 11px;
+
+                font-size: 12px;
+            }
+
+            .legenda {
+                gap: 10px;
+
+                padding: 9px 10px;
+
+                margin-bottom: 12px;
+            }
+
+            .legenda-item {
+                font-size: 9px;
+            }
+
+            .mesas-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .mesa-card {
+                min-height: 96px;
+
+                border-radius: 12px;
+
+                padding: 11px 9px;
+            }
+
+            .mesa-numero {
+                font-size: 17px;
+            }
+
+            .mesa-status {
+                font-size: 9px;
+            }
+
+        }
+
+        @media (max-width: 350px) {
+
+            .mesas-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ==================================================
+         TOPO
+    =================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-fire">
+                🔥
+            </div>
+
+            <div>
+
+                <h1>
+                    Bar do Cabeludo
+                </h1>
+
+                <small>
+                    Atendimento
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="usuario">
+
+            <div class="usuario-info">
+                <strong>
+                    {{ current_user.nome }}
+                </strong>
+            </div>
+
+
+            <nav class="menu-admin">
+
+                {% if current_user.perfil == "admin" %}
+
+                    <a href="{{ url_for('mesas.listar') }}">
+                        🍽 Mesas
+                    </a>
+
+                    <a href="{{ url_for('produtos.listar') }}">
+                        📋 Cardápio
+                    </a>
+
+                    <a
+                        href="{{ url_for('caixa.listar') }}"
+                        class="menu-caixa"
+                    >
+                        💰 Caixa
+                    </a>
+
+                    <a href="{{ url_for('caixa.relatorios') }}">
+                        📊 Relatórios
+                    </a>
+
+                    <a href="{{ url_for('usuarios.listar') }}">
+                        👥 Usuários
+                    </a>
+
+                    <a
+                        href="{{ url_for('painel.tv') }}"
+                        target="_blank"
+                    >
+                        📺 Painel TV
+                    </a>
+
+                {% endif %}
+
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="menu-sair"
+                >
+                    Sair
+                </a>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         CONTEÚDO
+    =================================================== -->
+
+    <main class="container">
+
+        <div class="page-header">
+
+            <div class="page-title">
+
+                <h2>
+                    Mesas
+                </h2>
+
+                <p>
+                    Selecione uma mesa para atender
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('pedidos.novo_marmitex') }}"
+                class="btn-marmitex"
+            >
+                🥡 Marmitex
+            </a>
+
+        </div>
+
+
+        <!-- LEGENDA -->
+
+        <div class="legenda">
+
+            <div class="legenda-item">
+                <span class="bolinha livre"></span>
+                Livre
+            </div>
+
+            <div class="legenda-item">
+                <span class="bolinha churrasqueira"></span>
+                Churrasqueira
+            </div>
+
+            <div class="legenda-item">
+                <span class="bolinha cozinha"></span>
+                Cozinha
+            </div>
+
+            <div class="legenda-item">
+                <span class="bolinha servido"></span>
+                Servido
+            </div>
+
+            <div class="legenda-item">
+                <span class="bolinha fechamento"></span>
+                Fechamento
+            </div>
+
+        </div>
+
+
+        <!-- MESAS -->
+
+        <div class="mesas-grid">
+
+            {% for mesa in mesas %}
+
+                <div
+                    class="
+                        mesa-card
+                        status-{{ mesa.status }}
+                    "
+                    onclick="abrirMesa({{ mesa.id }})"
+                >
+
+                    <div class="mesa-numero">
+                        {{ mesa.nome }}
+                    </div>
+
+                    <div class="mesa-status">
+
+                        {% if mesa.status == "livre" %}
+                            Livre
+
+                        {% elif mesa.status == "churrasqueira" %}
+                            Churrasqueira
+
+                        {% elif mesa.status == "cozinha" %}
+                            Cozinha
+
+                        {% elif mesa.status == "servido" %}
+                            Servido
+
+                        {% elif mesa.status == "fechamento" %}
+                            Fechamento
+
+                        {% else %}
+                            {{ mesa.status }}
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        function abrirMesa(mesaId) {
+
+            window.location.href =
+                "/pedidos/mesa/" + mesaId;
+
+        }
+
+
+        function marmitexEmBreve() {
+
+            /*
+             * O Marmitex terá o mesmo fluxo:
+             *
+             * Pedido
+             * -> Churrasqueira
+             * -> Carne Recebida
+             * -> Cozinha
+             * -> Marmitex Recebido
+             * -> Entregue/Pago
+             */
+
+            console.log(
+                "Novo pedido Marmitex"
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

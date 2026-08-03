@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Usuários | Bar do Cabeludo</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #111827;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .topo {
+            min-height: 72px;
+            background: #180f0b;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 12px 24px;
+        }
+
+        .topo strong {
+            font-size: 19px;
+        }
+
+        .topo a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .cabecalho {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .subtitulo {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .btn-novo {
+            background: #c65300;
+            color: white;
+
+            padding: 15px 20px;
+            border-radius: 12px;
+
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 13px;
+        }
+
+        .flash {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+
+            background: #dcfce7;
+            color: #166534;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .lista {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .usuario {
+            display: grid;
+
+            grid-template-columns:
+                minmax(200px, 1fr)
+                180px
+                130px
+                120px
+                210px;
+
+            gap: 15px;
+
+            align-items: center;
+
+            min-height: 75px;
+            padding: 12px 18px;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .usuario:last-child {
+            border-bottom: none;
+        }
+
+        .nome strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .nome small {
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .login {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 28px;
+
+            padding: 5px 10px;
+            border-radius: 8px;
+
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .admin {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .garcom {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .ativo {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .inativo {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .acoes {
+            display: flex;
+            justify-content: flex-end;
+            gap: 7px;
+        }
+
+        .acoes a,
+        .acoes button {
+            border: 0;
+            cursor: pointer;
+
+            text-decoration: none;
+
+            padding: 10px 12px;
+            border-radius: 8px;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .editar {
+            background: #180f0b;
+            color: white;
+        }
+
+        .status-btn {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .acoes form {
+            margin: 0;
+        }
+
+        @media (max-width: 700px) {
+
+            .topo {
+                padding: 12px 15px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .cabecalho {
+                align-items: flex-start;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn-novo {
+                padding: 13px 14px;
+                white-space: nowrap;
+            }
+
+            .lista {
+                background: transparent;
+                border: 0;
+                overflow: visible;
+            }
+
+            .usuario {
+                display: block;
+
+                background: white;
+
+                border: 1px solid #e5e7eb;
+                border-radius: 14px;
+
+                margin-bottom: 10px;
+                padding: 16px;
+            }
+
+            .login {
+                margin: 12px 0;
+            }
+
+            .badge {
+                margin-right: 5px;
+            }
+
+            .acoes {
+                margin-top: 15px;
+                justify-content: stretch;
+            }
+
+            .acoes a,
+            .acoes form,
+            .acoes button {
+                flex: 1;
+            }
+
+            .acoes button {
+                width: 100%;
+            }
+
+            .acoes a {
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<header class="topo">
+
+    <strong>
+        🔥 Bar do Cabeludo
+    </strong>
+
+    <a href="{{ url_for('mesas.listar') }}">
+        ← Mesas
+    </a>
+
+</header>
+
+
+<main class="container">
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for categoria, mensagem in messages %}
+
+                <div class="flash">
+                    {{ mensagem }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <div class="cabecalho">
+
+        <div>
+
+            <h1>
+                Usuários
+            </h1>
+
+            <div class="subtitulo">
+                Administradores e garçons do atendimento
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('usuarios.novo') }}"
+            class="btn-novo"
+        >
+            + Novo Usuário
+        </a>
+
+    </div>
+
+
+    <div class="lista">
+
+
+        {% for usuario in usuarios %}
+
+
+            <div class="usuario">
+
+
+                <div class="nome">
+
+                    <strong>
+                        {{ usuario.nome }}
+                    </strong>
+
+                    <small>
+                        Usuário #{{ usuario.id }}
+                    </small>
+
+                </div>
+
+
+                <div class="login">
+                    @{{ usuario.usuario }}
+                </div>
+
+
+                <div>
+
+                    {% if usuario.perfil == "admin" %}
+
+                        <span class="badge admin">
+                            Administrador
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge garcom">
+                            Garçom
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    {% if usuario.ativo %}
+
+                        <span class="badge ativo">
+                            ● Ativo
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge inativo">
+                            ● Inativo
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="acoes">
+
+                    <a
+                        href="{{ url_for(
+                            'usuarios.editar',
+                            usuario_id=usuario.id
+                        ) }}"
+                        class="editar"
+                    >
+                        Editar
+                    </a>
+
+
+                    {% if usuario.id != current_user.id %}
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'usuarios.alterar_status',
+                                usuario_id=usuario.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="status-btn"
+                            >
+
+                                {% if usuario.ativo %}
+                                    Desativar
+                                {% else %}
+                                    Ativar
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <div style="padding:30px;text-align:center;">
+                Nenhum usuário cadastrado.
+            </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>

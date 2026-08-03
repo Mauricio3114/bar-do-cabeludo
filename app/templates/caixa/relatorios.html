@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Relatórios | Bar do Cabeludo</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #111827;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        /* =================================================
+           TOPO
+        ================================================= */
+
+        .topo {
+            min-height: 72px;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    #151111,
+                    #211516
+                );
+
+            color: #fff;
+
+            border-bottom: 4px solid #d71920;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 10px 24px;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+
+            object-fit: cover;
+
+            border-radius: 11px;
+        }
+
+        .marca strong {
+            display: block;
+
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .marca small {
+            display: block;
+
+            color: #d1d5db;
+
+            font-size: 10px;
+
+            margin-top: 3px;
+        }
+
+        .btn-voltar {
+            min-height: 39px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 15px;
+
+            border-radius: 9px;
+
+            background: rgba(255,255,255,.08);
+            color: #fff;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+
+        /* =================================================
+           CONTEÚDO
+        ================================================= */
+
+        .container {
+            width: calc(100% - 30px);
+            max-width: 1220px;
+
+            margin: 24px auto 45px;
+        }
+
+        .cabecalho {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 15px;
+
+            margin-bottom: 16px;
+        }
+
+        .cabecalho h1 {
+            margin: 0;
+
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .cabecalho p {
+            margin: 5px 0 0;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        .btn-imprimir {
+            min-height: 42px;
+
+            border: 0;
+            border-radius: 10px;
+
+            padding: 0 17px;
+
+            background: #171111;
+            color: #fff;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+
+        /* =================================================
+           FILTROS
+        ================================================= */
+
+        .filtros {
+            background: #fff;
+
+            border: 1px solid #e2e4e8;
+            border-radius: 14px;
+
+            padding: 14px;
+
+            margin-bottom: 13px;
+
+            box-shadow:
+                0 5px 14px rgba(0,0,0,.05);
+
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr
+                1.2fr
+                1.2fr
+                auto;
+
+            gap: 9px;
+
+            align-items: end;
+        }
+
+        .campo label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #64748b;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            height: 42px;
+
+            border: 1px solid #d7dce2;
+            border-radius: 9px;
+
+            background: #fff;
+
+            padding: 0 10px;
+
+            font-size: 12px;
+
+            outline: none;
+        }
+
+        .campo input:focus,
+        .campo select:focus {
+            border-color: #d71920;
+
+            box-shadow:
+                0 0 0 3px rgba(215,25,32,.08);
+        }
+
+        .btn-consultar {
+            height: 42px;
+
+            border: 0;
+            border-radius: 9px;
+
+            background: #d71920;
+            color: #fff;
+
+            padding: 0 18px;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+
+        /* =================================================
+           RESUMO
+        ================================================= */
+
+        .resumo {
+            display: grid;
+
+            grid-template-columns:
+                2fr
+                1fr
+                1fr
+                1fr;
+
+            gap: 10px;
+
+            margin-bottom: 11px;
+        }
+
+        .kpi {
+            min-height: 92px;
+
+            background: #fff;
+
+            border: 1px solid #e2e4e8;
+            border-radius: 13px;
+
+            padding: 15px;
+
+            box-shadow:
+                0 5px 14px rgba(0,0,0,.05);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 4px;
+
+            background: #d71920;
+        }
+
+        .kpi.total {
+            background:
+                linear-gradient(
+                    135deg,
+                    #171111,
+                    #321719
+                );
+
+            color: #fff;
+        }
+
+        .kpi.total::before {
+            width: 0;
+        }
+
+        .kpi small {
+            display: block;
+
+            color: #64748b;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            margin-bottom: 11px;
+        }
+
+        .kpi.total small {
+            color: #fca5a5;
+        }
+
+        .kpi strong {
+            display: block;
+
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+        .kpi.total strong {
+            font-size: 30px;
+        }
+
+
+        /* =================================================
+           PAGAMENTOS
+        ================================================= */
+
+        .pagamentos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 22px;
+        }
+
+        .pagamento {
+            background: #fff;
+
+            border: 1px solid #e2e4e8;
+            border-bottom: 3px solid #d71920;
+            border-radius: 11px;
+
+            padding: 13px;
+        }
+
+        .pagamento small {
+            display: block;
+
+            color: #64748b;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            margin-bottom: 7px;
+        }
+
+        .pagamento strong {
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+
+        /* =================================================
+           SEÇÕES
+        ================================================= */
+
+        .secao {
+            margin-top: 20px;
+        }
+
+        .secao-titulo {
+            margin: 0 0 9px;
+
+            padding-left: 9px;
+
+            border-left: 4px solid #d71920;
+
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .painel {
+            background: #fff;
+
+            border: 1px solid #e2e4e8;
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 5px 14px rgba(0,0,0,.04);
+        }
+
+
+        /* =================================================
+           TABELAS
+        ================================================= */
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+
+            color: #64748b;
+
+            padding: 11px 13px;
+
+            text-align: left;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 12px 13px;
+
+            border-bottom: 1px solid #edf0f2;
+
+            font-size: 12px;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .valor {
+            font-weight: 900;
+        }
+
+        .quantidade {
+            font-weight: 900;
+
+            color: #d71920;
+        }
+
+        .tipo {
+            display: inline-flex;
+
+            padding: 4px 7px;
+
+            background: #f1f5f9;
+
+            border-radius: 6px;
+
+            color: #475569;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .tipo-adicional {
+            background: #fff1e8;
+            color: #c2410c;
+        }
+
+        .vazio {
+            padding: 28px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 12px;
+        }
+
+
+        /* =================================================
+           DUAS COLUNAS
+        ================================================= */
+
+        .duas-colunas {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr;
+
+            gap: 13px;
+        }
+
+
+        /* =================================================
+           MOBILE
+        ================================================= */
+
+        @media (max-width: 800px) {
+
+            .topo {
+                padding: 9px 12px;
+            }
+
+            .logo {
+                width: 43px;
+                height: 43px;
+            }
+
+            .marca strong {
+                font-size: 15px;
+            }
+
+            .marca small {
+                display: none;
+            }
+
+            .container {
+                width: calc(100% - 20px);
+
+                margin-top: 17px;
+            }
+
+            .cabecalho {
+                align-items: center;
+            }
+
+            .cabecalho h1 {
+                font-size: 23px;
+            }
+
+            .filtros {
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+            .btn-consultar {
+                grid-column:
+                    1 / -1;
+            }
+
+            .resumo {
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+            .kpi.total {
+                grid-column:
+                    1 / -1;
+            }
+
+            .pagamentos {
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+            .duas-colunas {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .painel {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+        }
+
+
+        /* =================================================
+           IMPRESSÃO
+        ================================================= */
+
+        @media print {
+
+            body {
+                background: #fff;
+            }
+
+            .topo {
+                background: #fff;
+                color: #000;
+
+                border-bottom: 2px solid #000;
+            }
+
+            .btn-voltar,
+            .btn-imprimir,
+            .filtros {
+                display: none;
+            }
+
+            .container {
+                width: 100%;
+                max-width: none;
+
+                margin: 20px 0;
+            }
+
+            .kpi,
+            .pagamento,
+            .painel {
+                box-shadow: none;
+            }
+
+            .kpi.total {
+                background: #fff;
+                color: #000;
+
+                border: 2px solid #000;
+            }
+
+            .kpi.total small {
+                color: #555;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="topo">
+
+    <div class="marca">
+
+        <img
+            src="{{ url_for('static', filename='img/logo-cabeludo.png') }}"
+            alt="Bar do Cabeludo"
+            class="logo"
+        >
+
+        <div>
+
+            <strong>
+                Bar do Cabeludo
+            </strong>
+
+            <small>
+                Relatórios Gerenciais
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('caixa.listar') }}"
+        class="btn-voltar"
+    >
+        ← CAIXA
+    </a>
+
+</header>
+
+
+<main class="container">
+
+
+    <!-- CABEÇALHO -->
+
+    <div class="cabecalho">
+
+        <div>
+
+            <h1>
+                Relatórios
+            </h1>
+
+            <p>
+                Consulte as vendas e produtos do período.
+            </p>
+
+        </div>
+
+
+        <div style="display:flex; gap:8px;">
+
+            <a
+                href="{{ url_for(
+                    'caixa.relatorios_pdf',
+                    data_inicial=data_inicial.strftime('%Y-%m-%d'),
+                    data_final=data_final.strftime('%Y-%m-%d'),
+                    usuario_id=usuario_id,
+                    forma_pagamento=forma_pagamento
+                ) }}"
+                class="btn-imprimir"
+                style="
+                    text-decoration:none;
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                "
+            >
+                📄 GERAR PDF
+            </a>
+
+            <button
+                type="button"
+                class="btn-imprimir"
+                onclick="window.print()"
+            >
+                🖨 IMPRIMIR
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTROS -->
+
+    <form
+        method="GET"
+        class="filtros"
+    >
+
+
+        <div class="campo">
+
+            <label>
+                Data inicial
+            </label>
+
+            <input
+                type="date"
+                name="data_inicial"
+                value="{{ data_inicial.strftime('%Y-%m-%d') }}"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                Data final
+            </label>
+
+            <input
+                type="date"
+                name="data_final"
+                value="{{ data_final.strftime('%Y-%m-%d') }}"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                Garçom
+            </label>
+
+            <select name="usuario_id">
+
+                <option value="">
+                    Todos
+                </option>
+
+                {% for usuario in usuarios %}
+
+                    <option
+                        value="{{ usuario.id }}"
+                        {% if usuario_id|string == usuario.id|string %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ usuario.nome }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                Forma de pagamento
+            </label>
+
+            <select name="forma_pagamento">
+
+                <option value="">
+                    Todas
+                </option>
+
+                <option
+                    value="dinheiro"
+                    {% if forma_pagamento == "dinheiro" %}
+                        selected
+                    {% endif %}
+                >
+                    Dinheiro
+                </option>
+
+                <option
+                    value="pix"
+                    {% if forma_pagamento == "pix" %}
+                        selected
+                    {% endif %}
+                >
+                    PIX
+                </option>
+
+                <option
+                    value="debito"
+                    {% if forma_pagamento == "debito" %}
+                        selected
+                    {% endif %}
+                >
+                    Débito
+                </option>
+
+                <option
+                    value="credito"
+                    {% if forma_pagamento == "credito" %}
+                        selected
+                    {% endif %}
+                >
+                    Crédito
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="btn-consultar"
+        >
+            CONSULTAR
+        </button>
+
+
+    </form>
+
+
+    <!-- RESUMO -->
+
+    <section class="resumo">
+
+
+        <div class="kpi total">
+
+            <small>
+                TOTAL VENDIDO
+            </small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(total_vendido)
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <small>
+                PEDIDOS
+            </small>
+
+            <strong>
+                {{ quantidade_pedidos }}
+            </strong>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <small>
+                MESAS
+            </small>
+
+            <strong>
+                {{ quantidade_mesas }}
+            </strong>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <small>
+                MARMITEX
+            </small>
+
+            <strong>
+                {{ quantidade_marmitex }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- PAGAMENTOS -->
+
+    <section class="pagamentos">
+
+
+        <div class="pagamento">
+
+            <small>
+                💵 DINHEIRO
+            </small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(totais_pagamento["dinheiro"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <small>
+                PIX
+            </small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(totais_pagamento["pix"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <small>
+                💳 DÉBITO
+            </small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(totais_pagamento["debito"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <small>
+                💳 CRÉDITO
+            </small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(totais_pagamento["credito"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- PRODUTOS + GARÇONS -->
+
+    <div class="duas-colunas">
+
+
+        <!-- PRODUTOS -->
+
+        <section class="secao">
+
+            <h2 class="secao-titulo">
+                Produtos Vendidos
+            </h2>
+
+            <div class="painel">
+
+                {% if produtos_vendidos %}
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Produto
+                                </th>
+
+                                <th>
+                                    Tipo
+                                </th>
+
+                                <th>
+                                    Qtd.
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for produto in produtos_vendidos %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            {{ produto.nome }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+
+                                        {% if produto.tipo_item == "adicional" %}
+
+                                            <span class="tipo tipo-adicional">
+                                                Adicional
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="tipo">
+                                                Normal
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td class="quantidade">
+                                        {{ produto.quantidade }}
+                                    </td>
+
+                                    <td class="valor">
+
+                                        R$ {{
+                                            "{:,.2f}".format(
+                                                produto.total or 0
+                                            )
+                                            .replace(",", "X")
+                                            .replace(".", ",")
+                                            .replace("X", ".")
+                                        }}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                {% else %}
+
+                    <div class="vazio">
+                        Nenhum produto vendido no período.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- GARÇONS -->
+
+        <section class="secao">
+
+            <h2 class="secao-titulo">
+                Vendas por Garçom
+            </h2>
+
+            <div class="painel">
+
+                {% if vendas_garcom %}
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Garçom
+                                </th>
+
+                                <th>
+                                    Pedidos
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for nome, dados in vendas_garcom.items() %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            {{ nome }}
+                                        </strong>
+                                    </td>
+
+                                    <td class="quantidade">
+                                        {{ dados["quantidade"] }}
+                                    </td>
+
+                                    <td class="valor">
+
+                                        R$ {{
+                                            "{:,.2f}".format(
+                                                dados["total"]
+                                            )
+                                            .replace(",", "X")
+                                            .replace(".", ",")
+                                            .replace("X", ".")
+                                        }}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                {% else %}
+
+                    <div class="vazio">
+                        Nenhuma venda encontrada.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+    <!-- VENDAS DO PERÍODO -->
+
+    <section class="secao">
+
+        <h2 class="secao-titulo">
+            Vendas do Período
+        </h2>
+
+        <div class="painel">
+
+            {% if pedidos %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Pedido
+                            </th>
+
+                            <th>
+                                Atendimento
+                            </th>
+
+                            <th>
+                                Garçom
+                            </th>
+
+                            <th>
+                                Pagamento
+                            </th>
+
+                            <th>
+                                Data
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for pedido in pedidos %}
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        #{{ pedido.id }}
+                                    </strong>
+                                </td>
+
+
+                                <td>
+
+                                    {% if pedido.tipo_atendimento == "marmitex" %}
+
+                                        🥡 Marmitex
+                                        #{{ pedido.numero_marmitex }}
+
+                                    {% else %}
+
+                                        Mesa
+                                        {{ "%02d"|format(pedido.mesa.numero) }}
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ pedido.usuario.nome }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if pedido.forma_pagamento %}
+
+                                        {{ pedido.forma_pagamento.upper() }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if pedido.finalizado_local %}
+
+                                        {{
+                                            pedido.finalizado_local.strftime(
+                                                "%d/%m/%Y %H:%M"
+                                            )
+                                        }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="valor">
+
+                                    R$ {{
+                                        "{:,.2f}".format(
+                                            pedido.total or 0
+                                        )
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="vazio">
+                    Nenhuma venda encontrada para os filtros selecionados.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Bar do Cabeludo</title>
+
+    <link
+        rel="manifest"
+        href="{{ url_for('static', filename='manifest.json') }}"
+    >
+
+    <meta
+        name="theme-color"
+        content="#5b0015"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="{{ url_for('static', filename='icons/icon-192.png') }}"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="{{ url_for('static', filename='icons/icon-192.png') }}"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at top,
+                    #3b2115 0%,
+                    #17100c 38%,
+                    #080706 100%
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 390px;
+
+            background: #ffffff;
+
+            border-radius: 22px;
+
+            padding: 34px 28px;
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,.45);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-icon {
+            width: 125px;
+            height: 125px;
+
+            margin: 0 auto 17px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            background: #5b0015;
+
+            box-shadow:
+                0 10px 25px rgba(91, 0, 21, .25);
+        }
+
+        .brand-icon img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+        .brand h1 {
+            color: #17100c;
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .brand p {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+        .field label {
+            display: block;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            color: #555;
+
+            margin-bottom: 7px;
+
+            text-transform: uppercase;
+        }
+
+        .field input {
+            width: 100%;
+
+            height: 50px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 12px;
+
+            padding: 0 14px;
+
+            font-size: 16px;
+
+            outline: none;
+
+            transition: .2s;
+        }
+
+        .field input:focus {
+            border-color: #8a4b28;
+
+            box-shadow:
+                0 0 0 3px rgba(138,75,40,.10);
+        }
+
+        .btn-login {
+            width: 100%;
+
+            height: 52px;
+
+            border: 0;
+
+            border-radius: 13px;
+
+            background: #17100c;
+
+            color: #fff;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+        }
+
+        .btn-login:hover {
+            background: #302017;
+        }
+
+        .alert {
+            padding: 11px 13px;
+
+            border-radius: 10px;
+
+            margin-bottom: 18px;
+
+            font-size: 13px;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+        .footer {
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #999;
+
+            font-size: 11px;
+        }
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 30px 22px;
+                border-radius: 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-card">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+
+                <img
+                    src="{{ url_for('static', filename='img/logo-cabeludo.png') }}"
+                    alt="Bar do Cabeludo"
+                >
+
+            </div>
+
+            <h1>Bar do Cabeludo</h1>
+
+            <p>
+                Sistema de Atendimento
+            </p>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <form method="POST">
+
+            <div class="field">
+
+                <label>
+                    Usuário
+                </label>
+
+                <input
+                    type="text"
+                    name="usuario"
+                    placeholder="Digite seu usuário"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Senha
+                </label>
+
+                <input
+                    type="password"
+                    name="senha"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-login"
+            >
+                Entrar
+            </button>
+
+        </form>
+
+
+        <div class="footer">
+            Bar do Cabeludo
+        </div>
+
+    </div>
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function () {
+
+                    navigator.serviceWorker.register(
+                        "{{ url_for('static', filename='service-worker.js') }}"
+                    )
+                    .then(function () {
+
+                        console.log(
+                            "PWA Bar do Cabeludo ativo."
+                        );
+
+                    })
+                    .catch(function (erro) {
+
+                        console.error(
+                            "Erro ao registrar PWA:",
+                            erro
+                        );
+
+                    });
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

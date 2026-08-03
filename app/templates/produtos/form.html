@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% if produto %}
+            Editar Produto
+        {% else %}
+            Novo Produto
+        {% endif %}
+        | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #171717;
+        }
+
+        .topbar {
+            min-height: 65px;
+
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+
+            padding: 10px 20px;
+        }
+
+        .topbar a {
+            color: #fff;
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+
+            margin: 0 auto;
+
+            padding: 22px 15px 40px;
+        }
+
+        .header {
+            margin-bottom: 17px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #777;
+            font-size: 12px;
+        }
+
+        .alert {
+            padding: 11px 13px;
+
+            margin-bottom: 14px;
+
+            border-radius: 10px;
+
+            background: #fee2e2;
+            color: #991b1b;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: #fff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 15px;
+
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 15px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #555;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            height: 45px;
+
+            padding: 0 12px;
+
+            border: 1px solid #d7dbe0;
+
+            border-radius: 10px;
+
+            background: #fff;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #8a4b28;
+
+            box-shadow:
+                0 0 0 3px rgba(138,75,40,.08);
+        }
+
+        .adicional-box {
+            grid-column: 1 / -1;
+
+            padding: 15px;
+
+            background: #fffaf5;
+
+            border: 1px solid #fed7aa;
+
+            border-radius: 12px;
+        }
+
+        .switch-line {
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+        }
+
+        .switch-line input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .switch-line label {
+            margin: 0;
+
+            color: #7c2d12;
+
+            font-size: 11px;
+        }
+
+        .adicional-campos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-top: 14px;
+        }
+
+        .acoes {
+            display: flex;
+            justify-content: flex-end;
+
+            gap: 8px;
+
+            margin-top: 18px;
+        }
+
+        .btn {
+            min-height: 44px;
+
+            padding: 0 18px;
+
+            border-radius: 10px;
+
+            border: 0;
+
+            cursor: pointer;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .btn-cancelar {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-salvar {
+            background: #17100c;
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                min-height: 57px;
+                padding: 8px 12px;
+            }
+
+            .container {
+                padding: 14px 10px 30px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 14px;
+                border-radius: 12px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .field-full,
+            .adicional-box {
+                grid-column: auto;
+            }
+
+            .adicional-campos {
+                grid-template-columns: 1fr;
+            }
+
+            .acoes {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <a href="{{ url_for('produtos.listar') }}">
+            ← Voltar para Cardápio
+        </a>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="header">
+
+            <h1>
+
+                {% if produto %}
+                    Editar Produto
+                {% else %}
+                    Novo Produto
+                {% endif %}
+
+            </h1>
+
+            <p>
+                Configure o item que ficará disponível
+                no atendimento.
+            </p>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <form method="POST">
+
+            <div class="card">
+
+                <div class="grid">
+
+
+                    <!-- NOME -->
+
+                    <div class="field field-full">
+
+                        <label>
+                            Nome do Produto
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nome"
+                            required
+                            autofocus
+                            placeholder="Ex.: Picanha"
+                            value="{{
+                                produto.nome
+                                if produto
+                                else request.form.get('nome', '')
+                            }}"
+                        >
+
+                    </div>
+
+
+                    <!-- CATEGORIA -->
+
+                    <div class="field">
+
+                        <label>
+                            Categoria
+                        </label>
+
+                        <select
+                            name="categoria_id"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            {% for categoria in categorias %}
+
+                                <option
+                                    value="{{ categoria.id }}"
+
+                                    {% if produto and produto.categoria_id == categoria.id %}
+                                        selected
+                                    {% elif request.form.get('categoria_id')|int == categoria.id %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ categoria.nome }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TIPO -->
+
+                    <div class="field">
+
+                        <label>
+                            Tipo
+                        </label>
+
+                        {% set tipo_atual =
+                            produto.tipo
+                            if produto
+                            else request.form.get('tipo', '')
+                        %}
+
+                        <select
+                            name="tipo"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option
+                                value="carne"
+                                {% if tipo_atual == "carne" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Carne
+                            </option>
+
+                            <option
+                                value="acompanhamento"
+                                {% if tipo_atual == "acompanhamento" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Acompanhamento
+                            </option>
+
+                            <option
+                                value="bebida"
+                                {% if tipo_atual == "bebida" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Bebida
+                            </option>
+
+                            <option
+                                value="sobremesa"
+                                {% if tipo_atual == "sobremesa" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Sobremesa
+                            </option>
+
+                            <option
+                                value="outro"
+                                {% if tipo_atual == "outro" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Outro
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PREÇO -->
+
+                    <div class="field">
+
+                        <label>
+                            Preço Normal
+                        </label>
+
+                        <input
+                            type="text"
+                            name="preco"
+                            inputmode="decimal"
+                            placeholder="0,00"
+                            value="{%
+                                if produto
+                            %}{{
+                                '%.2f'|format(produto.preco)
+                            }}{%
+                                else
+                            %}{{
+                                request.form.get('preco', '0,00')
+                            }}{%
+                                endif
+                            %}"
+                        >
+
+                    </div>
+
+
+                    <!-- ORDEM -->
+
+                    <div class="field">
+
+                        <label>
+                            Ordem de Exibição
+                        </label>
+
+                        <input
+                            type="number"
+                            name="ordem"
+                            min="0"
+                            value="{{
+                                produto.ordem
+                                if produto
+                                else request.form.get('ordem', 0)
+                            }}"
+                        >
+
+                    </div>
+
+
+                    <!-- ADICIONAL -->
+
+                    <div class="adicional-box">
+
+                        <div class="switch-line">
+
+                            <input
+                                type="checkbox"
+                                id="permite_adicional"
+                                name="permite_adicional"
+
+                                {% if produto and produto.permite_adicional %}
+                                    checked
+                                {% elif request.form.get('permite_adicional') %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label for="permite_adicional">
+                                Este produto também pode ser vendido
+                                como adicional
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            class="adicional-campos"
+                            id="camposAdicional"
+                        >
+
+                            <div class="field">
+
+                                <label>
+                                    Preço do Adicional
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="preco_adicional"
+                                    inputmode="decimal"
+                                    placeholder="0,00"
+                                    value="{%
+                                        if produto
+                                    %}{{
+                                        '%.2f'|format(
+                                            produto.preco_adicional
+                                        )
+                                    }}{%
+                                        else
+                                    %}{{
+                                        request.form.get(
+                                            'preco_adicional',
+                                            '0,00'
+                                        )
+                                    }}{%
+                                        endif
+                                    %}"
+                                >
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <label>
+                                    Unidade
+                                </label>
+
+                                {% set unidade =
+                                    produto.unidade_adicional
+                                    if produto
+                                    else request.form.get(
+                                        'unidade_adicional',
+                                        ''
+                                    )
+                                %}
+
+                                <select name="unidade_adicional">
+
+                                    <option value="">
+                                        Selecione
+                                    </option>
+
+                                    <option
+                                        value="fatia"
+                                        {% if unidade == "fatia" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Fatia
+                                    </option>
+
+                                    <option
+                                        value="unidade"
+                                        {% if unidade == "unidade" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Unidade
+                                    </option>
+
+                                    <option
+                                        value="porcao"
+                                        {% if unidade == "porcao" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Porção
+                                    </option>
+
+                                    <option
+                                        value="outro"
+                                        {% if unidade == "outro" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Outro
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="acoes">
+
+                    <a
+                        href="{{ url_for('produtos.listar') }}"
+                        class="btn btn-cancelar"
+                    >
+                        Cancelar
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-salvar"
+                    >
+                        Salvar Produto
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <script>
+
+        const checkbox =
+            document.getElementById(
+                "permite_adicional"
+            );
+
+        const campos =
+            document.getElementById(
+                "camposAdicional"
+            );
+
+
+        function atualizarAdicional() {
+
+            if (checkbox.checked) {
+
+                campos.style.display = "grid";
+
+            } else {
+
+                campos.style.display = "none";
+
+            }
+
+        }
+
+
+        checkbox.addEventListener(
+            "change",
+            atualizarAdicional
+        );
+
+
+        atualizarAdicional();
+
+    </script>
+
+</body>
+
+</html>

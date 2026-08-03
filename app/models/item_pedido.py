@@ -1,0 +1,76 @@
+from decimal import Decimal
+
+from app import db
+
+
+class ItemPedido(db.Model):
+    __tablename__ = "itens_pedido"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    pedido_id = db.Column(
+        db.Integer,
+        db.ForeignKey("pedidos.id"),
+        nullable=False,
+        index=True
+    )
+
+    produto_id = db.Column(
+        db.Integer,
+        db.ForeignKey("produtos.id"),
+        nullable=False,
+        index=True
+    )
+
+    # normal
+    # adicional
+    tipo_item = db.Column(
+        db.String(20),
+        nullable=False,
+        default="normal"
+    )
+
+    quantidade = db.Column(
+        db.Integer,
+        nullable=False,
+        default=1
+    )
+
+    valor_unitario = db.Column(
+        db.Numeric(10, 2),
+        nullable=False,
+        default=Decimal("0.00")
+    )
+
+    valor_total = db.Column(
+        db.Numeric(10, 2),
+        nullable=False,
+        default=Decimal("0.00")
+    )
+
+    observacao = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    pedido = db.relationship(
+        "Pedido",
+        back_populates="itens"
+    )
+
+    produto = db.relationship(
+        "Produto"
+    )
+
+    acompanhamentos = db.relationship(
+        "ItemPedidoAcompanhamento",
+        back_populates="item_pedido",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
+    def __repr__(self):
+        return f"<ItemPedido {self.id}>"

@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Caixa | Bar do Cabeludo</title>
+
+    <style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    :root {
+        --red: #c9151e;
+        --red-dark: #9f1017;
+        --red-soft: #fff1f2;
+
+        --black: #171717;
+        --graphite: #242424;
+
+        --white: #ffffff;
+        --bg: #f1f2f4;
+
+        --border: #e2e4e8;
+        --muted: #6b7280;
+
+        --shadow:
+            0 5px 15px rgba(0, 0, 0, .08),
+            0 1px 3px rgba(0, 0, 0, .06);
+    }
+
+
+    body {
+        margin: 0;
+
+        background:
+            linear-gradient(
+                180deg,
+                #eceef1 0,
+                #f5f6f7 260px,
+                #f3f4f6 100%
+            );
+
+        color: #111827;
+
+        font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+        min-height: 100vh;
+    }
+
+
+    /* =================================================
+       TOPO
+    ================================================= */
+
+    .topo {
+        min-height: 76px;
+
+        background:
+            linear-gradient(
+                110deg,
+                #161616,
+                #211516
+            );
+
+        color: white;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 12px 26px;
+
+        border-bottom: 4px solid var(--red);
+
+        box-shadow:
+            0 5px 16px rgba(0, 0, 0, .20);
+    }
+
+    .marca strong {
+        display: block;
+
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .marca small {
+        display: block;
+
+        margin-top: 4px;
+
+        color: #d1d5db;
+
+        font-size: 10px;
+    }
+
+    .topo a {
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 12px;
+        font-weight: 900;
+
+        padding: 9px 13px;
+
+        border-radius: 8px;
+
+        transition: .15s;
+    }
+
+    .topo a:hover {
+        background: rgba(255,255,255,.08);
+    }
+
+
+    /* =================================================
+       CONTEÚDO
+    ================================================= */
+
+    .container {
+        width: 100%;
+        max-width: 1250px;
+
+        margin: auto;
+
+        padding: 25px 22px 45px;
+    }
+
+    .cabecalho {
+        display: flex;
+
+        align-items: flex-end;
+        justify-content: space-between;
+
+        gap: 15px;
+
+        margin-bottom: 18px;
+    }
+
+    h1 {
+        margin: 0;
+
+        font-size: 30px;
+        font-weight: 900;
+
+        letter-spacing: -.5px;
+    }
+
+    .subtitulo {
+        margin-top: 5px;
+
+        color: var(--muted);
+
+        font-size: 12px;
+    }
+
+
+    /* =================================================
+       FILTRO
+    ================================================= */
+
+    .filtro {
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+    }
+
+    .filtro input {
+        min-height: 43px;
+
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+
+        padding: 8px 12px;
+
+        background: white;
+
+        font-weight: 700;
+
+        box-shadow:
+            0 2px 6px rgba(0,0,0,.04);
+    }
+
+    .filtro input:focus {
+        outline: none;
+
+        border-color: var(--red);
+
+        box-shadow:
+            0 0 0 3px rgba(201,21,30,.10);
+    }
+
+    .filtro button {
+        min-height: 43px;
+
+        border: 0;
+        border-radius: 10px;
+
+        padding: 8px 18px;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--red),
+                var(--red-dark)
+            );
+
+        color: white;
+
+        cursor: pointer;
+
+        font-size: 11px;
+        font-weight: 900;
+
+        box-shadow:
+            0 5px 12px rgba(159,16,23,.22);
+
+        transition: .15s;
+    }
+
+    .filtro button:hover {
+        transform: translateY(-1px);
+
+        box-shadow:
+            0 7px 16px rgba(159,16,23,.28);
+    }
+
+    .acoes-caixa {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-fechamento {
+            min-height: 43px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1b1111,
+                    #301516
+                );
+
+            color: #ffffff;
+
+            border: 1px solid rgba(220, 38, 38, .35);
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            white-space: nowrap;
+
+            box-shadow:
+                0 6px 16px rgba(0,0,0,.14);
+
+            transition: .18s;
+        }
+
+        .btn-fechamento:hover {
+            background: #c9151e;
+            color: #ffffff;
+            border-color: #c9151e;
+
+            transform: translateY(-1px);
+        }
+
+
+    /* =================================================
+       KPIs
+    ================================================= */
+
+    .kpis {
+        display: grid;
+
+        grid-template-columns:
+            2fr
+            1fr
+            1fr
+            1fr;
+
+        gap: 11px;
+
+        margin-bottom: 11px;
+    }
+
+    .kpi {
+        min-height: 102px;
+
+        padding: 17px;
+
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: 14px;
+
+        box-shadow: var(--shadow);
+
+        position: relative;
+
+        overflow: hidden;
+    }
+
+    .kpi:not(.principal)::before {
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+        top: 0;
+        bottom: 0;
+
+        width: 4px;
+
+        background: var(--red);
+    }
+
+    .kpi.principal {
+        background:
+            linear-gradient(
+                135deg,
+                #171717 0%,
+                #261416 100%
+            );
+
+        color: white;
+
+        border-color: #292929;
+
+        box-shadow:
+            0 8px 20px rgba(0,0,0,.18);
+    }
+
+    .kpi.principal::after {
+        content: "";
+
+        position: absolute;
+
+        width: 150px;
+        height: 150px;
+
+        right: -55px;
+        top: -70px;
+
+        background: rgba(201,21,30,.22);
+
+        border-radius: 50%;
+    }
+
+    .kpi small {
+        display: block;
+
+        margin-bottom: 11px;
+
+        color: #6b7280;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+    }
+
+    .kpi.principal small {
+        color: #fca5a5;
+    }
+
+    .kpi strong {
+        display: block;
+
+        font-size: 23px;
+        font-weight: 900;
+    }
+
+    .kpi.principal strong {
+        font-size: 31px;
+
+        position: relative;
+
+        z-index: 2;
+    }
+
+
+    /* =================================================
+       PAGAMENTOS
+    ================================================= */
+
+    .pagamentos {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 10px;
+
+        margin-bottom: 23px;
+    }
+
+    .pagamento {
+        background: white;
+
+        border: 1px solid var(--border);
+        border-radius: 12px;
+
+        padding: 14px 15px;
+
+        box-shadow:
+            0 3px 10px rgba(0,0,0,.055);
+
+        position: relative;
+
+        overflow: hidden;
+    }
+
+    .pagamento::after {
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 3px;
+
+        background: var(--red);
+    }
+
+    .pagamento span {
+        display: block;
+
+        color: #6b7280;
+
+        font-size: 10px;
+        font-weight: 900;
+
+        margin-bottom: 6px;
+    }
+
+    .pagamento strong {
+        font-size: 18px;
+        font-weight: 900;
+
+        color: #111827;
+    }
+
+
+    /* =================================================
+       HISTÓRICO
+    ================================================= */
+
+    .titulo-lista {
+        margin-bottom: 10px;
+
+        font-size: 13px;
+        font-weight: 900;
+
+        color: #18181b;
+
+        display: flex;
+        align-items: center;
+
+        gap: 8px;
+    }
+
+    .titulo-lista::before {
+        content: "";
+
+        width: 5px;
+        height: 17px;
+
+        border-radius: 5px;
+
+        background: var(--red);
+    }
+
+    .lista {
+        background: white;
+
+        border: 1px solid #dedfe3;
+        border-radius: 14px;
+
+        overflow: hidden;
+
+        box-shadow:
+            0 6px 18px rgba(0,0,0,.075);
+    }
+
+    .pedido-link {
+        color: inherit;
+        text-decoration: none;
+
+        display: block;
+    }
+
+    .pedido {
+        display: grid;
+
+        grid-template-columns:
+            90px
+            1fr
+            160px
+            150px
+            120px
+            140px;
+
+        gap: 10px;
+
+        align-items: center;
+
+        min-height: 68px;
+
+        padding: 10px 15px;
+
+        background: white;
+
+        border-bottom: 1px solid #e7e7e7;
+
+        cursor: pointer;
+
+        transition:
+            background .15s ease,
+            transform .15s ease,
+            box-shadow .15s ease;
+    }
+
+    .pedido-link:last-of-type .pedido {
+        border-bottom: 0;
+    }
+
+    .pedido:hover {
+        background:
+            linear-gradient(
+                90deg,
+                #fff1f2,
+                #ffffff 45%
+            );
+
+        box-shadow:
+            inset 4px 0 0 var(--red);
+    }
+
+    .numero {
+        font-size: 14px;
+        font-weight: 900;
+
+        color: var(--red);
+    }
+
+    .atendimento strong {
+        display: block;
+
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+    .atendimento small {
+        display: block;
+
+        color: #6b7280;
+
+        margin-top: 3px;
+
+        font-size: 9px;
+    }
+
+    .garcom {
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .forma {
+        font-size: 11px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        color: #27272a;
+    }
+
+    .hora {
+        font-size: 12px;
+        font-weight: 800;
+
+        color: #3f3f46;
+    }
+
+    .valor {
+        text-align: right;
+
+        font-size: 16px;
+        font-weight: 900;
+
+        color: #111827;
+    }
+
+    .vazio {
+        padding: 45px 20px;
+
+        text-align: center;
+
+        color: #6b7280;
+
+        font-size: 13px;
+    }
+
+
+    /* =================================================
+       MOBILE
+    ================================================= */
+
+    @media (max-width: 800px) {
+
+        .acoes-caixa {
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .acoes-caixa .filtro {
+            width: 100%;
+        }
+
+        .acoes-caixa .filtro input {
+            flex: 1;
+        }
+
+        .btn-fechamento {
+            width: 100%;
+        }
+
+        .topo {
+            padding: 11px 14px;
+        }
+
+        .container {
+            padding: 15px 12px 30px;
+        }
+
+        .cabecalho {
+            display: block;
+        }
+
+        h1 {
+            font-size: 26px;
+        }
+
+        .filtro {
+            margin-top: 14px;
+        }
+
+        .filtro input {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+        .kpis {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+        .kpi.principal {
+            grid-column: 1 / -1;
+        }
+
+        .kpi {
+            min-height: 90px;
+        }
+
+        .pagamentos {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+        .lista {
+            background: transparent;
+
+            border: 0;
+
+            overflow: visible;
+
+            box-shadow: none;
+        }
+
+        .pedido {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                auto;
+
+            background: white;
+
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid var(--red);
+
+            border-radius: 12px;
+
+            margin-bottom: 9px;
+
+            padding: 14px;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.07);
+        }
+
+        .numero {
+            grid-column: 1;
+        }
+
+        .valor {
+            grid-column: 2;
+            grid-row: 1;
+
+            font-size: 18px;
+        }
+
+        .atendimento {
+            grid-column: 1 / -1;
+        }
+
+        .garcom,
+        .forma,
+        .hora {
+            font-size: 10px;
+        }
+
+        .hora {
+            text-align: right;
+        }
+
+    }
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="topo">
+
+    <div class="marca">
+
+        <strong>
+            🔥 Bar do Cabeludo
+        </strong>
+
+        <small>
+            Gestão Financeira
+        </small>
+
+    </div>
+
+
+    <a href="{{ url_for('mesas.listar') }}">
+        ← Mesas
+    </a>
+
+</header>
+
+
+<main class="container">
+
+
+    <div class="cabecalho">
+
+        <div>
+
+            <h1>
+                Caixa
+            </h1>
+
+            <div class="subtitulo">
+                Vendas e recebimentos do atendimento
+            </div>
+
+        </div>
+
+
+        <div class="acoes-caixa">
+
+            <form
+                method="GET"
+                class="filtro"
+            >
+
+                <input
+                    type="date"
+                    name="data"
+                    value="{{ data_selecionada.strftime('%Y-%m-%d') }}"
+                >
+
+                <button type="submit">
+                    CONSULTAR
+                </button>
+
+            </form>
+
+
+            <a
+                href="{{ url_for('caixa.fechamento', data=data_selecionada.strftime('%Y-%m-%d')) }}"
+                class="btn-fechamento"
+            >
+                🔒 FECHAMENTO DO DIA
+            </a>
+
+            <a
+                href="{{ url_for('caixa.relatorios') }}"
+                class="btn-fechamento"
+            >
+                📊 RELATÓRIOS
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================
+         KPIS
+    ================================================= -->
+
+
+    <section class="kpis">
+
+
+        <div class="kpi principal">
+
+            <small>
+                Total vendido
+            </small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(total_vendido)
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <small>
+                Pedidos
+            </small>
+
+            <strong>
+                {{ quantidade }}
+            </strong>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <small>
+                Mesas
+            </small>
+
+            <strong>
+                {{ mesas }}
+            </strong>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <small>
+                Marmitex
+            </small>
+
+            <strong>
+                {{ marmitex }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ================================================
+         FORMAS DE PAGAMENTO
+    ================================================= -->
+
+
+    <section class="pagamentos">
+
+
+        <div class="pagamento">
+
+            <span>
+                💵 DINHEIRO
+            </span>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["dinheiro"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <span>
+                PIX
+            </span>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["pix"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <span>
+                💳 DÉBITO
+            </span>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["debito"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <span>
+                💳 CRÉDITO
+            </span>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["credito"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ================================================
+         HISTÓRICO
+    ================================================= -->
+
+
+    <div class="titulo-lista">
+        PEDIDOS FINALIZADOS
+    </div>
+
+
+    <section class="lista">
+
+
+        {% for pedido in pedidos %}
+
+
+            <a
+                href="{{ url_for('caixa.detalhe_pedido', pedido_id=pedido.id) }}"
+                class="pedido-link"
+            >
+
+                <div class="pedido">
+
+
+                <div class="numero">
+                    #{{ pedido.id }}
+                </div>
+
+
+                <div class="atendimento">
+
+                    <strong>
+
+                        {% if pedido.tipo_atendimento == "marmitex" %}
+
+                            🥡 Marmitex
+                            #{{ pedido.numero_marmitex }}
+
+                        {% else %}
+
+                            Mesa
+                            {{ "%02d"|format(pedido.mesa.numero) }}
+
+                        {% endif %}
+
+                    </strong>
+
+                    <small>
+                        Pedido finalizado
+                    </small>
+
+                </div>
+
+
+                <div class="garcom">
+                    {{ pedido.usuario.nome }}
+                </div>
+
+
+                <div class="forma">
+
+                    {% if pedido.forma_pagamento == "dinheiro" %}
+
+                        💵 Dinheiro
+
+                    {% elif pedido.forma_pagamento == "pix" %}
+
+                        PIX
+
+                    {% elif pedido.forma_pagamento == "debito" %}
+
+                        💳 Débito
+
+                    {% elif pedido.forma_pagamento == "credito" %}
+
+                        💳 Crédito
+
+                    {% else %}
+
+                        {{ pedido.forma_pagamento or "-" }}
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="hora">
+
+                    {% if pedido.finalizado_local %}
+
+                        {{
+                            pedido.finalizado_local.strftime(
+                                "%H:%M"
+                            )
+                        }}
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="valor">
+
+                    R$ {{
+                        "{:,.2f}".format(pedido.total)
+                        .replace(",", "X")
+                        .replace(".", ",")
+                        .replace("X", ".")
+                    }}
+
+                </div>
+
+
+            </div>
+
+        </a>
+
+
+        {% else %}
+
+
+            <div class="vazio">
+
+                Nenhuma venda finalizada nesta data.
+
+            </div>
+
+
+        {% endfor %}
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

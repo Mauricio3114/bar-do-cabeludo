@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Fechamento do Caixa | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            background: #f3f4f6;
+            color: #171717;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .topo {
+            min-height: 76px;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    #161616,
+                    #211516
+                );
+
+            color: white;
+
+            border-bottom: 4px solid #c9151e;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 12px 26px;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 52px;
+            height: 52px;
+
+            border-radius: 11px;
+
+            object-fit: cover;
+        }
+
+        .marca strong {
+            display: block;
+
+            font-size: 18px;
+        }
+
+        .marca small {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #d1d5db;
+
+            font-size: 10px;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 7px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 9px;
+
+            padding: 10px 14px;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+        .btn-voltar {
+            background: rgba(255,255,255,.08);
+            color: white;
+        }
+
+        .btn-imprimir {
+            background: #c9151e;
+            color: white;
+        }
+
+        .container {
+            width: calc(100% - 30px);
+            max-width: 900px;
+
+            margin: 25px auto 40px;
+        }
+
+        .titulo {
+            margin-bottom: 17px;
+        }
+
+        .titulo h1 {
+            margin: 0;
+
+            font-size: 27px;
+            font-weight: 900;
+        }
+
+        .titulo p {
+            margin: 5px 0 0;
+
+            color: #6b7280;
+
+            font-size: 12px;
+        }
+
+        .resumo-principal {
+            background:
+                linear-gradient(
+                    135deg,
+                    #171717,
+                    #291517
+                );
+
+            color: white;
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            margin-bottom: 11px;
+
+            box-shadow:
+                0 8px 22px rgba(0,0,0,.16);
+        }
+
+        .resumo-principal small {
+            display: block;
+
+            color: #fca5a5;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            margin-bottom: 8px;
+        }
+
+        .resumo-principal strong {
+            display: block;
+
+            font-size: 34px;
+            font-weight: 900;
+        }
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid #e2e4e8;
+            border-radius: 13px;
+
+            padding: 16px;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.06);
+        }
+
+        .card small {
+            display: block;
+
+            color: #6b7280;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            margin-bottom: 8px;
+        }
+
+        .card strong {
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .pagamentos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 10px;
+
+            margin-top: 10px;
+        }
+
+        .pagamento {
+            background: white;
+
+            border: 1px solid #e2e4e8;
+            border-bottom: 3px solid #c9151e;
+
+            border-radius: 12px;
+
+            padding: 15px;
+        }
+
+        .pagamento small {
+            display: block;
+
+            color: #6b7280;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            margin-bottom: 7px;
+        }
+
+        .pagamento strong {
+            font-size: 17px;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .topo {
+                padding: 11px 13px;
+            }
+
+            .marca small {
+                display: none;
+            }
+
+            .logo {
+                width: 44px;
+                height: 44px;
+            }
+
+            .btn {
+                padding: 9px 8px;
+                font-size: 9px;
+            }
+
+            .grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .pagamentos {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        /* =================================================
+           IMPRESSÃO
+        ================================================= */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .topo {
+                background: white;
+                color: black;
+
+                border-bottom: 2px solid black;
+
+                box-shadow: none;
+            }
+
+            .acoes {
+                display: none;
+            }
+
+            .marca small {
+                color: #555;
+            }
+
+            .container {
+                width: 100%;
+
+                max-width: none;
+
+                margin: 20px 0;
+            }
+
+            .resumo-principal {
+                background: white;
+                color: black;
+
+                border: 2px solid black;
+
+                box-shadow: none;
+            }
+
+            .resumo-principal small {
+                color: #555;
+            }
+
+            .card,
+            .pagamento {
+                box-shadow: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="topo">
+
+    <div class="marca">
+
+        <img
+            src="{{ url_for('static', filename='img/logo-cabeludo.png') }}"
+            class="logo"
+            alt="Bar do Cabeludo"
+        >
+
+        <div>
+
+            <strong>
+                Bar do Cabeludo
+            </strong>
+
+            <small>
+                Fechamento do Caixa
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="acoes">
+
+        <a
+            href="{{ url_for('caixa.listar', data=data_selecionada.strftime('%Y-%m-%d')) }}"
+            class="btn btn-voltar"
+        >
+            ← CAIXA
+        </a>
+
+        <div style="display:flex; gap:8px;">
+
+            <a
+                href="{{ url_for(
+                    'caixa.fechamento_pdf',
+                    data=data_selecionada.strftime('%Y-%m-%d')
+                ) }}"
+                style="
+                    height: 38px;
+                    padding: 0 16px;
+                    border-radius: 10px;
+                    background: #d71920;
+                    color: #ffffff;
+                    text-decoration: none;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 7px;
+                    font-size: 12px;
+                    font-weight: 800;
+                    font-family: Arial, Helvetica, sans-serif;
+                    border: 1px solid #ef3038;
+                    box-shadow: 0 5px 14px rgba(215,25,32,.20);
+                    white-space: nowrap;
+                "
+            >
+                📄 GERAR PDF
+            </a>
+
+            <button
+                type="button"
+                class="btn-imprimir"
+                onclick="window.print()"
+            >
+                🖨 IMPRIMIR
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    <div class="titulo">
+
+        <h1>
+            Fechamento do Dia
+        </h1>
+
+        <p>
+            {{ data_selecionada.strftime("%d/%m/%Y") }}
+        </p>
+
+    </div>
+
+
+    <section class="resumo-principal">
+
+        <small>
+            TOTAL DO DIA
+        </small>
+
+        <strong>
+            R$ {{
+                "{:,.2f}".format(total_vendido)
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+            }}
+        </strong>
+
+    </section>
+
+
+    <section class="grid">
+
+
+        <div class="card">
+
+            <small>
+                Pedidos
+            </small>
+
+            <strong>
+                {{ quantidade }}
+            </strong>
+
+        </div>
+
+
+        <div class="card">
+
+            <small>
+                Mesas
+            </small>
+
+            <strong>
+                {{ mesas }}
+            </strong>
+
+        </div>
+
+
+        <div class="card">
+
+            <small>
+                Marmitex
+            </small>
+
+            <strong>
+                {{ marmitex }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+    <section class="pagamentos">
+
+
+        <div class="pagamento">
+
+            <small>💵 DINHEIRO</small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["dinheiro"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <small>PIX</small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["pix"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <small>💳 DÉBITO</small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["debito"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+        <div class="pagamento">
+
+            <small>💳 CRÉDITO</small>
+
+            <strong>
+                R$ {{
+                    "{:,.2f}".format(pagamentos["credito"])
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+</html>
