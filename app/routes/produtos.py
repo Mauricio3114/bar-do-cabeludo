@@ -150,6 +150,11 @@ def novo():
             ""
         ).strip()
 
+        destino_preparo = request.form.get(
+            "destino_preparo",
+            "sem_preparo"
+        ).strip()
+
         preco = converter_decimal(
             request.form.get("preco")
         )
@@ -213,6 +218,23 @@ def novo():
             "outro"
         }
 
+        destinos_validos = {
+            "churrasqueira",
+            "cozinha",
+            "sem_preparo"
+        }
+
+        if destino_preparo not in destinos_validos:
+            flash(
+                "Selecione um destino de preparo válido.",
+                "danger"
+            )
+            return render_template(
+                "produtos/form.html",
+                categorias=categorias,
+                produto=None
+            )
+
         if tipo not in tipos_validos:
             flash(
                 "Selecione o tipo do produto.",
@@ -243,6 +265,7 @@ def novo():
             categoria_id=categoria.id,
             nome=nome,
             tipo=tipo,
+            destino_preparo=destino_preparo,
             preco=preco,
             permite_adicional=permite_adicional,
             preco_adicional=(
@@ -324,6 +347,11 @@ def editar(produto_id):
             ""
         ).strip()
 
+        destino_preparo = request.form.get(
+            "destino_preparo",
+            "sem_preparo"
+        ).strip()
+
         preco = converter_decimal(
             request.form.get("preco")
         )
@@ -383,6 +411,23 @@ def editar(produto_id):
             "outro"
         }
 
+        destinos_validos = {
+            "churrasqueira",
+            "cozinha",
+            "sem_preparo"
+        }
+
+        if destino_preparo not in destinos_validos:
+            flash(
+                "Selecione um destino de preparo válido.",
+                "danger"
+            )
+            return render_template(
+                "produtos/form.html",
+                categorias=categorias,
+                produto=produto
+            )
+
         if tipo not in tipos_validos:
             flash(
                 "Selecione o tipo do produto.",
@@ -397,8 +442,8 @@ def editar(produto_id):
         produto.nome = nome
         produto.categoria_id = categoria.id
         produto.tipo = tipo
+        produto.destino_preparo = destino_preparo
         produto.preco = preco
-        produto.permite_adicional = permite_adicional
 
         produto.preco_adicional = (
             preco_adicional

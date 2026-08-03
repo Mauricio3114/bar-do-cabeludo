@@ -19,9 +19,9 @@ from app.models.item_pedido import ItemPedido
 from app.models.item_pedido_acompanhamento import ItemPedidoAcompanhamento
 
 from app.services.impressao import (
-    imprimir_churrasqueira,
     imprimir_cozinha,
-    imprimir_adicional_churrasqueira
+    imprimir_destinos_iniciais,
+    imprimir_novo_consumo_por_destino
 )
 
 
@@ -157,12 +157,6 @@ def mesa(mesa_id):
 
     if request.method == "POST":
 
-        # -------------------------------------------------
-        # Neste primeiro fluxo, só permitimos criar
-        # o pedido se a mesa ainda não tiver pedido ativo.
-        # Depois faremos "Adicionar itens".
-        # -------------------------------------------------
-
         if pedido:
 
             flash(
@@ -177,6 +171,10 @@ def mesa(mesa_id):
                 )
             )
 
+        # =================================================
+        # CARNE / PRATO PRINCIPAL
+        # =================================================
+
         carne_id = request.form.get(
             "carne_id",
             type=int
@@ -185,15 +183,47 @@ def mesa(mesa_id):
         carne = None
 
         if carne_id:
+
             carne = db.session.get(
                 Produto,
                 carne_id
             )
 
-        if not carne or not carne.ativo or carne.tipo != "carne":
+            if (
+                not carne
+                or not carne.ativo
+                or carne.tipo != "carne"
+            ):
+
+                carne = None
+
+        # =================================================
+        # VERIFICA SE EXISTE OUTRO PRATO SELECIONADO
+        # =================================================
+
+        possui_outro_prato = False
+
+        for produto in outros:
+
+            quantidade = request.form.get(
+                f"produto_{produto.id}",
+                0,
+                type=int
+            )
+
+            if (
+                quantidade
+                and quantidade > 0
+            ):
+                possui_outro_prato = True
+                break
+
+        # Precisa existir pelo menos uma carne
+        # OU algum prato da categoria "outro".
+        if not carne and not possui_outro_prato:
 
             flash(
-                "Selecione uma carne para o prato.",
+                "Selecione uma carne ou um prato.",
                 "danger"
             )
 
@@ -204,94 +234,113 @@ def mesa(mesa_id):
                 )
             )
 
-        # -------------------------------------------------
-        # Cria pedido
-        # -------------------------------------------------
+        # =================================================
+        # CRIA PEDIDO
+        # =================================================
 
         novo_pedido = Pedido(
             tipo_atendimento="mesa",
             mesa_id=mesa.id,
             usuario_id=current_user.id,
-            status="churrasqueira",
+            status="cozinha",
             subtotal=Decimal("0.00"),
             desconto=Decimal("0.00"),
-            total=Decimal("0.00"),
-            enviado_churrasqueira_em=datetime.utcnow()
+            total=Decimal("0.00")
         )
 
-        db.session.add(novo_pedido)
+        db.session.add(
+            novo_pedido
+        )
 
-        # Flush para gerar ID antes do commit
         db.session.flush()
 
         total_pedido = Decimal("0.00")
 
-        # =================================================
-        # PRATO / CARNE PRINCIPAL
-        # =================================================
-
-        quantidade_prato = request.form.get(
-            "quantidade_prato",
-            1,
-            type=int
-        )
-
-        if quantidade_prato < 1:
-            quantidade_prato = 1
-
-        valor_prato = (
-            carne.preco
-            * quantidade_prato
-        )
-
-        item_prato = ItemPedido(
-            pedido_id=novo_pedido.id,
-            produto_id=carne.id,
-            tipo_item="normal",
-            quantidade=quantidade_prato,
-            valor_unitario=carne.preco,
-            valor_total=valor_prato
-        )
-
-        db.session.add(item_prato)
-        db.session.flush()
-
-        total_pedido += valor_prato
+        item_prato = None
 
         # =================================================
-        # ACOMPANHAMENTOS ESCOLHIDOS
+        # CARNE PRINCIPAL
+        # =================================================
+
+        if carne:
+
+            quantidade_prato = request.form.get(
+                "quantidade_prato",
+                1,
+                type=int
+            )
+
+            if (
+                quantidade_prato is None
+                or quantidade_prato < 1
+            ):
+                quantidade_prato = 1
+
+            valor_prato = (
+                carne.preco
+                * quantidade_prato
+            )
+
+            item_prato = ItemPedido(
+                pedido_id=novo_pedido.id,
+                produto_id=carne.id,
+                tipo_item="normal",
+                quantidade=quantidade_prato,
+                valor_unitario=carne.preco,
+                valor_total=valor_prato
+            )
+
+            db.session.add(
+                item_prato
+            )
+
+            db.session.flush()
+
+            total_pedido += valor_prato
+
+        # =================================================
+        # ACOMPANHAMENTOS
         # =================================================
 
         acompanhamento_ids = request.form.getlist(
             "acompanhamentos"
         )
 
-        for acompanhamento_id in acompanhamento_ids:
+        # Os acompanhamentos atuais ficam vinculados
+        # ao prato principal.
+        if item_prato:
 
-            try:
-                acompanhamento_id = int(
+            for acompanhamento_id in acompanhamento_ids:
+
+                try:
+
+                    acompanhamento_id = int(
+                        acompanhamento_id
+                    )
+
+                except (TypeError, ValueError):
+
+                    continue
+
+                acompanhamento = db.session.get(
+                    Produto,
                     acompanhamento_id
                 )
-            except (TypeError, ValueError):
-                continue
 
-            acompanhamento = db.session.get(
-                Produto,
-                acompanhamento_id
-            )
+                if (
+                    acompanhamento
+                    and acompanhamento.ativo
+                    and acompanhamento.tipo == "acompanhamento"
+                ):
 
-            if (
-                acompanhamento
-                and acompanhamento.ativo
-                and acompanhamento.tipo == "acompanhamento"
-            ):
+                    vinculo = ItemPedidoAcompanhamento(
+                        item_pedido_id=item_prato.id,
+                        produto_id=acompanhamento.id
+                    )
 
-                vinculo = ItemPedidoAcompanhamento(
-                    item_pedido_id=item_prato.id,
-                    produto_id=acompanhamento.id
-                )
-
-                db.session.add(vinculo)
+                    db.session.add(
+                        vinculo
+                    )
 
         # =================================================
         # ADICIONAIS
@@ -305,7 +354,13 @@ def mesa(mesa_id):
                 type=int
             )
 
-            if quantidade is None or quantidade <= 0:
+            if (
+                quantidade is None
+                or quantidade <= 0
+            ):
+                continue
+
+            if adicional.preco_adicional is None:
                 continue
 
             valor_total_adicional = (
@@ -322,9 +377,13 @@ def mesa(mesa_id):
                 valor_total=valor_total_adicional
             )
 
-            db.session.add(item_adicional)
+            db.session.add(
+                item_adicional
+            )
 
-            total_pedido += valor_total_adicional
+            total_pedido += (
+                valor_total_adicional
+            )
 
         # =================================================
         # BEBIDAS / SOBREMESAS / OUTROS
@@ -344,7 +403,13 @@ def mesa(mesa_id):
                 type=int
             )
 
-            if quantidade is None or quantidade <= 0:
+            if (
+                quantidade is None
+                or quantidade <= 0
+            ):
+                continue
+
+            if produto.preco is None:
                 continue
 
             valor_total_item = (
@@ -361,40 +426,138 @@ def mesa(mesa_id):
                 valor_total=valor_total_item
             )
 
-            db.session.add(item)
+            db.session.add(
+                item
+            )
 
-            total_pedido += valor_total_item
+            total_pedido += (
+                valor_total_item
+            )
 
         # =================================================
-        # TOTAL E STATUS DA MESA
+        # TOTAL
         # =================================================
 
         novo_pedido.subtotal = total_pedido
         novo_pedido.total = total_pedido
 
-        mesa.status = "churrasqueira"
+        # Flush para garantir que todos os itens estejam
+        # disponíveis para separar os destinos.
+        db.session.flush()
+
+        # =================================================
+        # DESCOBRE DESTINOS DO PEDIDO
+        # =================================================
+
+        possui_churrasqueira = any(
+            getattr(
+                item.produto,
+                "destino_preparo",
+                "sem_preparo"
+            ) == "churrasqueira"
+            for item in novo_pedido.itens
+        )
+
+        possui_cozinha = any(
+            getattr(
+                item.produto,
+                "destino_preparo",
+                "sem_preparo"
+            ) == "cozinha"
+            for item in novo_pedido.itens
+        )
+
+        # Se existir qualquer item da churrasqueira,
+        # o fluxo principal aguarda a carne.
+        if possui_churrasqueira:
+
+            novo_pedido.status = "churrasqueira"
+            novo_pedido.enviado_churrasqueira_em = (
+                datetime.utcnow()
+            )
+
+            mesa.status = "churrasqueira"
+
+        elif possui_cozinha:
+
+            novo_pedido.status = "cozinha"
+            novo_pedido.enviado_cozinha_em = (
+                datetime.utcnow()
+            )
+
+            mesa.status = "cozinha"
+
+        else:
+
+            # Pedido sem preparo:
+            # bebida/sobremesa/etc.
+            novo_pedido.status = "servido"
+            novo_pedido.servido_em = datetime.utcnow()
+
+            mesa.status = "servido"
 
         db.session.commit()
 
-        # =====================================================
-        # IMPRESSÃO - CHURRASQUEIRA
-        # =====================================================
+        # =================================================
+        # IMPRESSÃO AUTOMÁTICA POR DESTINO
+        # =================================================
 
         try:
-            imprimir_churrasqueira(novo_pedido)
+
+            imprimir_destinos_iniciais(
+                novo_pedido
+            )
+
         except Exception as erro:
+
             print(
-                "ERRO IMPRESSÃO CHURRASQUEIRA:",
+                "ERRO IMPRESSÃO INICIAL:",
                 erro
             )
 
+        # =================================================
+        # MENSAGEM
+        # =================================================
+
+        if (
+            possui_churrasqueira
+            and possui_cozinha
+        ):
+
+            mensagem = (
+                f"Pedido da {mesa.nome} enviado "
+                "para churrasqueira e cozinha."
+            )
+
+        elif possui_churrasqueira:
+
+            mensagem = (
+                f"Pedido da {mesa.nome} enviado "
+                "para a churrasqueira."
+            )
+
+        elif possui_cozinha:
+
+            mensagem = (
+                f"Pedido da {mesa.nome} enviado "
+                "direto para a cozinha."
+            )
+
+        else:
+
+            mensagem = (
+                f"Pedido da {mesa.nome} registrado."
+            )
+
         flash(
-            f"Pedido da {mesa.nome} enviado para a churrasqueira.",
+            mensagem,
             "success"
         )
 
         return redirect(
-            url_for("mesas.listar")
+            url_for(
+                "mesas.listar"
+            )
         )
 
     return render_template(
@@ -658,10 +821,7 @@ def adicionar_consumo(pedido_id):
 
         valor_adicionado = Decimal("0.00")
         itens_adicionados = 0
-
-        # Somente carnes adicionadas NESTA operação
-        # serão enviadas para a churrasqueira.
-        itens_churrasqueira = []
+        itens_novos = []
 
         # =================================================
         # ADICIONAIS
@@ -675,14 +835,19 @@ def adicionar_consumo(pedido_id):
                 type=int
             )
 
-            if not quantidade or quantidade <= 0:
+            if (
+                not quantidade
+                or quantidade <= 0
+            ):
                 continue
 
             if produto.preco_adicional is None:
                 continue
 
             valor_unitario = Decimal(
-                str(produto.preco_adicional)
+                str(
+                    produto.preco_adicional
+                )
             )
 
             valor_total = (
@@ -697,12 +862,18 @@ def adicionar_consumo(pedido_id):
                 quantidade=quantidade,
                 valor_unitario=valor_unitario,
                 valor_total=valor_total,
-                observacao="Adicionado durante o atendimento"
+                observacao=(
+                    "Adicionado durante o atendimento"
+                )
             )
 
-            db.session.add(item)
+            db.session.add(
+                item
+            )
 
-            itens_churrasqueira.append(item)
+            itens_novos.append(
+                item
+            )
 
             valor_adicionado += valor_total
             itens_adicionados += quantidade
@@ -725,14 +896,19 @@ def adicionar_consumo(pedido_id):
                 type=int
             )
 
-            if not quantidade or quantidade <= 0:
+            if (
+                not quantidade
+                or quantidade <= 0
+            ):
                 continue
 
             if produto.preco is None:
                 continue
 
             valor_unitario = Decimal(
-                str(produto.preco)
+                str(
+                    produto.preco
+                )
             )
 
             valor_total = (
@@ -747,10 +923,18 @@ def adicionar_consumo(pedido_id):
                 quantidade=quantidade,
                 valor_unitario=valor_unitario,
                 valor_total=valor_total,
-                observacao="Adicionado durante o atendimento"
+                observacao=(
+                    "Adicionado durante o atendimento"
+                )
             )
 
-            db.session.add(item)
+            db.session.add(
+                item
+            )
+
+            itens_novos.append(
+                item
+            )
 
             valor_adicionado += valor_total
             itens_adicionados += quantidade
@@ -774,49 +958,53 @@ def adicionar_consumo(pedido_id):
             )
 
         # =================================================
-        # ATUALIZA TOTAL
+        # TOTAL
         # =================================================
 
         pedido.subtotal = (
-            Decimal(str(pedido.subtotal or 0))
+            Decimal(
+                str(
+                    pedido.subtotal or 0
+                )
+            )
             + valor_adicionado
         )
 
         pedido.total = (
-            Decimal(str(pedido.total or 0))
+            Decimal(
+                str(
+                    pedido.total or 0
+                )
+            )
             + valor_adicionado
         )
 
+        db.session.flush()
+
         db.session.commit()
 
+        # =================================================
+        # IMPRESSÃO DO NOVO CONSUMO POR DESTINO
+        # =================================================
 
-        # =====================================================
-        # NOVA CARNE -> CHURRASQUEIRA
-        # =====================================================
+        try:
 
-        if itens_churrasqueira:
+            imprimir_novo_consumo_por_destino(
+                pedido,
+                itens_novos
+            )
 
-            try:
+        except Exception as erro:
 
-                imprimir_adicional_churrasqueira(
-                    pedido,
-                    itens_churrasqueira
-                )
-
-            except Exception as erro:
-
-                print(
-                    "ERRO IMPRESSÃO ADICIONAL "
-                    "CHURRASQUEIRA:",
-                    erro
-                )
-
+            print(
+                "ERRO IMPRESSÃO NOVO CONSUMO:",
+                erro
+            )
 
         flash(
             "Novo consumo adicionado ao pedido.",
             "success"
         )
-
 
         return redirect(
             url_for(
@@ -1070,6 +1258,10 @@ def novo_marmitex():
 
     if request.method == "POST":
 
+        # =================================================
+        # CARNE / PRATO
+        # =================================================
+
         carne_id = request.form.get(
             "carne_id",
             type=int
@@ -1078,19 +1270,41 @@ def novo_marmitex():
         carne = None
 
         if carne_id:
+
             carne = db.session.get(
                 Produto,
                 carne_id
             )
 
-        if (
-            not carne
-            or not carne.ativo
-            or carne.tipo != "carne"
-        ):
+            if (
+                not carne
+                or not carne.ativo
+                or carne.tipo != "carne"
+            ):
+                carne = None
+
+        possui_outro_prato = False
+
+        for produto in outros:
+
+            quantidade = request.form.get(
+                f"produto_{produto.id}",
+                0,
+                type=int
+            )
+
+            if (
+                quantidade
+                and quantidade > 0
+            ):
+
+                possui_outro_prato = True
+                break
+
+        if not carne and not possui_outro_prato:
 
             flash(
-                "Selecione uma carne para o Marmitex.",
+                "Selecione uma carne ou um prato para o Marmitex.",
                 "danger"
             )
 
@@ -1101,7 +1315,7 @@ def novo_marmitex():
             )
 
         # =================================================
-        # GERA PRÓXIMO NÚMERO DO MARMITEX
+        # NÚMERO DO MARMITEX
         # =================================================
 
         ultimo = (
@@ -1117,10 +1331,13 @@ def novo_marmitex():
         )
 
         if ultimo:
+
             numero_marmitex = (
                 ultimo.numero_marmitex + 1
             )
+
         else:
+
             numero_marmitex = 1
 
         # =================================================
@@ -1132,11 +1349,10 @@ def novo_marmitex():
             mesa_id=None,
             numero_marmitex=numero_marmitex,
             usuario_id=current_user.id,
-            status="churrasqueira",
+            status="cozinha",
             subtotal=Decimal("0.00"),
             desconto=Decimal("0.00"),
-            total=Decimal("0.00"),
-            enviado_churrasqueira_em=datetime.utcnow()
+            total=Decimal("0.00")
         )
 
         db.session.add(
@@ -1147,40 +1363,47 @@ def novo_marmitex():
 
         total_pedido = Decimal("0.00")
 
+        item_prato = None
+
         # =================================================
         # CARNE PRINCIPAL
         # =================================================
 
-        quantidade_prato = request.form.get(
-            "quantidade_prato",
-            1,
-            type=int
-        )
+        if carne:
 
-        if quantidade_prato < 1:
-            quantidade_prato = 1
+            quantidade_prato = request.form.get(
+                "quantidade_prato",
+                1,
+                type=int
+            )
 
-        valor_prato = (
-            carne.preco
-            * quantidade_prato
-        )
+            if (
+                quantidade_prato is None
+                or quantidade_prato < 1
+            ):
+                quantidade_prato = 1
 
-        item_prato = ItemPedido(
-            pedido_id=novo_pedido.id,
-            produto_id=carne.id,
-            tipo_item="normal",
-            quantidade=quantidade_prato,
-            valor_unitario=carne.preco,
-            valor_total=valor_prato
-        )
+            valor_prato = (
+                carne.preco
+                * quantidade_prato
+            )
 
-        db.session.add(
-            item_prato
-        )
+            item_prato = ItemPedido(
+                pedido_id=novo_pedido.id,
+                produto_id=carne.id,
+                tipo_item="normal",
+                quantidade=quantidade_prato,
+                valor_unitario=carne.preco,
+                valor_total=valor_prato
+            )
 
-        db.session.flush()
+            db.session.add(
+                item_prato
+            )
 
-        total_pedido += valor_prato
+            db.session.flush()
+
+            total_pedido += valor_prato
 
         # =================================================
         # ACOMPANHAMENTOS
@@ -1190,35 +1413,39 @@ def novo_marmitex():
             "acompanhamentos"
         )
 
-        for acompanhamento_id in acompanhamento_ids:
+        if item_prato:
 
-            try:
-                acompanhamento_id = int(
+            for acompanhamento_id in acompanhamento_ids:
+
+                try:
+
+                    acompanhamento_id = int(
+                        acompanhamento_id
+                    )
+
+                except (TypeError, ValueError):
+
+                    continue
+
+                acompanhamento = db.session.get(
+                    Produto,
                     acompanhamento_id
                 )
 
-            except (TypeError, ValueError):
-                continue
+                if (
+                    acompanhamento
+                    and acompanhamento.ativo
+                    and acompanhamento.tipo == "acompanhamento"
+                ):
 
-            acompanhamento = db.session.get(
-                Produto,
-                acompanhamento_id
-            )
+                    vinculo = ItemPedidoAcompanhamento(
+                        item_pedido_id=item_prato.id,
+                        produto_id=acompanhamento.id
+                    )
 
-            if (
-                acompanhamento
-                and acompanhamento.ativo
-                and acompanhamento.tipo == "acompanhamento"
-            ):
-
-                vinculo = ItemPedidoAcompanhamento(
-                    item_pedido_id=item_prato.id,
-                    produto_id=acompanhamento.id
-                )
-
-                db.session.add(
-                    vinculo
-                )
+                    db.session.add(
+                        vinculo
+                    )
 
         # =================================================
         # ADICIONAIS
@@ -1313,28 +1540,104 @@ def novo_marmitex():
             )
 
         # =================================================
-        # TOTAL
+        # TOTAL E DESTINO
         # =================================================
 
         novo_pedido.subtotal = total_pedido
         novo_pedido.total = total_pedido
 
+        db.session.flush()
+
+        possui_churrasqueira = any(
+            getattr(
+                item.produto,
+                "destino_preparo",
+                "sem_preparo"
+            ) == "churrasqueira"
+            for item in novo_pedido.itens
+        )
+
+        possui_cozinha = any(
+            getattr(
+                item.produto,
+                "destino_preparo",
+                "sem_preparo"
+            ) == "cozinha"
+            for item in novo_pedido.itens
+        )
+
+        if possui_churrasqueira:
+
+            novo_pedido.status = "churrasqueira"
+
+            novo_pedido.enviado_churrasqueira_em = (
+                datetime.utcnow()
+            )
+
+        elif possui_cozinha:
+
+            novo_pedido.status = "cozinha"
+
+            novo_pedido.enviado_cozinha_em = (
+                datetime.utcnow()
+            )
+
+        else:
+
+            novo_pedido.status = "servido"
+            novo_pedido.servido_em = datetime.utcnow()
+
         db.session.commit()
 
-        # =====================================================
-        # IMPRESSÃO - CHURRASQUEIRA
-        # =====================================================
+        # =================================================
+        # IMPRESSÃO
+        # =================================================
 
         try:
-            imprimir_churrasqueira(novo_pedido)
+
+            imprimir_destinos_iniciais(
+                novo_pedido
+            )
+
         except Exception as erro:
+
             print(
-                "ERRO IMPRESSÃO CHURRASQUEIRA:",
+                "ERRO IMPRESSÃO MARMITEX:",
                 erro
             )
 
+        if (
+            possui_churrasqueira
+            and possui_cozinha
+        ):
+
+            mensagem = (
+                f"Marmitex #{numero_marmitex} enviado "
+                "para churrasqueira e cozinha."
+            )
+
+        elif possui_churrasqueira:
+
+            mensagem = (
+                f"Marmitex #{numero_marmitex} enviado "
+                "para a churrasqueira."
+            )
+
+        elif possui_cozinha:
+
+            mensagem = (
+                f"Marmitex #{numero_marmitex} enviado "
+                "direto para a cozinha."
+            )
+
+        else:
+
+            mensagem = (
+                f"Marmitex #{numero_marmitex} registrado."
+            )
+
         flash(
-            f"Marmitex #{numero_marmitex} enviado para a churrasqueira.",
+            mensagem,
             "success"
         )
 

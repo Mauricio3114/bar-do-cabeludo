@@ -7,11 +7,13 @@ from datetime import datetime
 
 MODO_TESTE = True
 
+
 IMPRESSORA_CHURRASQUEIRA = {
     "nome": "Churrasqueira",
     "ip": "192.168.0.201",
     "porta": 9100,
 }
+
 
 IMPRESSORA_COZINHA = {
     "nome": "Cozinha",
@@ -32,6 +34,24 @@ def titulo(texto):
     return texto.center(42)
 
 
+def destino_produto(produto):
+
+    destino = getattr(
+        produto,
+        "destino_preparo",
+        None
+    )
+
+    if destino in [
+        "churrasqueira",
+        "cozinha",
+        "sem_preparo"
+    ]:
+        return destino
+
+    return "sem_preparo"
+
+
 def identificacao_pedido(pedido):
 
     linhas = []
@@ -42,7 +62,7 @@ def identificacao_pedido(pedido):
             f"MARMITEX: #{pedido.numero_marmitex}"
         )
 
-    else:
+    elif pedido.mesa:
 
         linhas.append(
             f"MESA: {pedido.mesa.numero:02d}"
@@ -63,11 +83,84 @@ def identificacao_pedido(pedido):
     return linhas
 
 
+def identificacao_destaque(pedido):
+
+    if pedido.tipo_atendimento == "marmitex":
+
+        return titulo(
+            f">>> MARMITEX #{pedido.numero_marmitex} <<<"
+        )
+
+    if pedido.mesa:
+
+        return titulo(
+            f">>> MESA {pedido.mesa.numero:02d} <<<"
+        )
+
+    return titulo(
+        f">>> PEDIDO #{pedido.id} <<<"
+    )
+
+
+def identificacao_final(pedido):
+
+    if pedido.tipo_atendimento == "marmitex":
+
+        return titulo(
+            f"MARMITEX #{pedido.numero_marmitex}"
+        )
+
+    if pedido.mesa:
+
+        return titulo(
+            f"MESA {pedido.mesa.numero:02d}"
+        )
+
+    return titulo(
+        f"PEDIDO #{pedido.id}"
+    )
+
+
+def itens_por_destino(
+    pedido,
+    destino
+):
+
+    itens = []
+
+    for item in pedido.itens:
+
+        produto = item.produto
+
+        if not produto:
+            continue
+
+        if destino_produto(produto) == destino:
+
+            itens.append(item)
+
+    return itens
+
+
 # =========================================================
 # TICKET CHURRASQUEIRA
 # =========================================================
 
-def montar_ticket_churrasqueira(pedido):
+def montar_ticket_churrasqueira(
+    pedido,
+    itens=None
+):
+
+    if itens is None:
+
+        itens = itens_por_destino(
+            pedido,
+            "churrasqueira"
+        )
+
+    if not itens:
+        return None
+
 
     conteudo = []
 
@@ -75,33 +168,23 @@ def montar_ticket_churrasqueira(pedido):
         titulo("BAR DO CABELUDO")
     )
 
-    conteudo.append(linha())
+    conteudo.append(
+        linha()
+    )
 
     conteudo.append(
         titulo("CHURRASQUEIRA")
     )
 
-    conteudo.append(linha())
+    conteudo.append(
+        linha()
+    )
 
-    # =====================================================
-    # IDENTIFICAÇÃO PRINCIPAL
-    # =====================================================
-
-    if pedido.tipo_atendimento == "marmitex":
-
-        conteudo.append(
-            titulo(
-                f">>> MARMITEX #{pedido.numero_marmitex} <<<"
-            )
+    conteudo.append(
+        identificacao_destaque(
+            pedido
         )
-
-    else:
-
-        conteudo.append(
-            titulo(
-                f">>> MESA {pedido.mesa.numero:02d} <<<"
-            )
-        )
+    )
 
     conteudo.append("")
 
@@ -117,75 +200,161 @@ def montar_ticket_churrasqueira(pedido):
         f"HORA: {datetime.now().strftime('%H:%M')}"
     )
 
-    conteudo.append(linha())
+    conteudo.append(
+        linha()
+    )
 
-    # =====================================================
-    # CARNES
-    # =====================================================
 
-    encontrou_carne = False
-
-    for item in pedido.itens:
+    for item in itens:
 
         produto = item.produto
 
-        if (
-            produto.tipo == "carne"
-            or item.tipo_item == "adicional"
-        ):
-
-            encontrou_carne = True
-
-            if item.tipo_item == "adicional":
-
-                conteudo.append(
-                    f"{item.quantidade}x "
-                    f"{produto.nome.upper()} "
-                    f"[ADICIONAL]"
-                )
-
-            else:
-
-                conteudo.append(
-                    f"{item.quantidade}x "
-                    f"{produto.nome.upper()}"
-                )
-
-    if not encontrou_carne:
-
-        conteudo.append(
-            "SEM CARNE"
+        texto = (
+            f"{item.quantidade}x "
+            f"{produto.nome.upper()}"
         )
 
-    conteudo.append(linha())
+        if item.tipo_item == "adicional":
 
-    # =====================================================
-    # IDENTIFICAÇÃO NO FINAL
-    # =====================================================
-
-    if pedido.tipo_atendimento == "marmitex":
+            texto += " [ADICIONAL]"
 
         conteudo.append(
-            titulo(
-                f"MARMITEX #{pedido.numero_marmitex}"
-            )
+            texto
         )
 
-    else:
 
-        conteudo.append(
-            titulo(
-                f"MESA {pedido.mesa.numero:02d}"
-            )
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        identificacao_final(
+            pedido
         )
+    )
 
-    conteudo.append("\n\n\n")
+    conteudo.append(
+        "\n\n\n"
+    )
 
-    return "\n".join(conteudo)
+    return "\n".join(
+        conteudo
+    )
 
 
 # =========================================================
-# TICKET COZINHA
+# TICKET COZINHA - ITEM DIRETO
+# =========================================================
+
+def montar_ticket_cozinha_direta(
+    pedido,
+    itens=None
+):
+
+    if itens is None:
+
+        itens = itens_por_destino(
+            pedido,
+            "cozinha"
+        )
+
+    if not itens:
+        return None
+
+
+    conteudo = []
+
+    conteudo.append(
+        titulo("BAR DO CABELUDO")
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        titulo("COZINHA")
+    )
+
+    conteudo.append(
+        titulo("*** PEDIDO DIRETO ***")
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        identificacao_destaque(
+            pedido
+        )
+    )
+
+    conteudo.append("")
+
+    conteudo.append(
+        f"PEDIDO: #{pedido.id}"
+    )
+
+    conteudo.append(
+        f"GARCOM: {pedido.usuario.nome.upper()}"
+    )
+
+    conteudo.append(
+        f"HORA: {datetime.now().strftime('%H:%M')}"
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+
+    for item in itens:
+
+        produto = item.produto
+
+        texto = (
+            f"{item.quantidade}x "
+            f"{produto.nome.upper()}"
+        )
+
+        if item.tipo_item == "adicional":
+
+            texto += " [ADICIONAL]"
+
+        conteudo.append(
+            texto
+        )
+
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        titulo(
+            "PREPARO DIRETO NA COZINHA"
+        )
+    )
+
+    conteudo.append(
+        identificacao_final(
+            pedido
+        )
+    )
+
+    conteudo.append(
+        "\n\n\n"
+    )
+
+    return "\n".join(
+        conteudo
+    )
+
+
+# =========================================================
+# TICKET COZINHA - ACOMPANHAMENTOS
+# APÓS A CARNE SER LIBERADA
 # =========================================================
 
 def montar_ticket_cozinha(pedido):
@@ -196,27 +365,42 @@ def montar_ticket_cozinha(pedido):
         titulo("BAR DO CABELUDO")
     )
 
-    conteudo.append(linha())
+    conteudo.append(
+        linha()
+    )
 
     conteudo.append(
         titulo("COZINHA")
     )
 
-    conteudo.append(linha())
-
-    conteudo.extend(
-        identificacao_pedido(pedido)
+    conteudo.append(
+        titulo("ACOMPANHAMENTOS")
     )
 
-    conteudo.append(linha())
+    conteudo.append(
+        linha()
+    )
 
     conteudo.append(
-        "ACOMPANHAMENTOS"
+        identificacao_destaque(
+            pedido
+        )
     )
 
     conteudo.append("")
 
+    conteudo.extend(
+        identificacao_pedido(
+            pedido
+        )
+    )
+
+    conteudo.append(
+        linha()
+    )
+
     encontrou = False
+
 
     for item in pedido.itens:
 
@@ -225,8 +409,10 @@ def montar_ticket_cozinha(pedido):
             encontrou = True
 
             conteudo.append(
-                f"[X] {acompanhamento.produto.nome.upper()}"
+                f"[X] "
+                f"{acompanhamento.produto.nome.upper()}"
             )
+
 
     if not encontrou:
 
@@ -234,16 +420,223 @@ def montar_ticket_cozinha(pedido):
             "SEM ACOMPANHAMENTOS"
         )
 
-    conteudo.append(linha())
+
+    conteudo.append(
+        linha()
+    )
 
     conteudo.append(
         f"CARNE LIBERADA: "
         f"{datetime.now().strftime('%H:%M')}"
     )
 
-    conteudo.append("\n\n\n")
+    conteudo.append(
+        identificacao_final(
+            pedido
+        )
+    )
 
-    return "\n".join(conteudo)
+    conteudo.append(
+        "\n\n\n"
+    )
+
+    return "\n".join(
+        conteudo
+    )
+
+
+# =========================================================
+# NOVO CONSUMO - CHURRASQUEIRA
+# =========================================================
+
+def montar_ticket_adicional_churrasqueira(
+    pedido,
+    itens_novos
+):
+
+    if not itens_novos:
+        return None
+
+
+    conteudo = []
+
+    conteudo.append(
+        titulo("BAR DO CABELUDO")
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        titulo("*** NOVO CONSUMO ***")
+    )
+
+    conteudo.append(
+        titulo("CHURRASQUEIRA")
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        identificacao_destaque(
+            pedido
+        )
+    )
+
+    conteudo.append("")
+
+    conteudo.extend(
+        identificacao_pedido(
+            pedido
+        )
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+
+    for item in itens_novos:
+
+        produto = item.produto
+
+        texto = (
+            f"{item.quantidade}x "
+            f"{produto.nome.upper()}"
+        )
+
+        if item.tipo_item == "adicional":
+
+            texto += " [ADICIONAL]"
+
+        conteudo.append(
+            texto
+        )
+
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        titulo(
+            "NOVO CONSUMO"
+        )
+    )
+
+    conteudo.append(
+        identificacao_final(
+            pedido
+        )
+    )
+
+    conteudo.append(
+        "\n\n\n"
+    )
+
+    return "\n".join(
+        conteudo
+    )
+
+
+# =========================================================
+# NOVO CONSUMO - COZINHA
+# =========================================================
+
+def montar_ticket_adicional_cozinha(
+    pedido,
+    itens_novos
+):
+
+    if not itens_novos:
+        return None
+
+
+    conteudo = []
+
+    conteudo.append(
+        titulo("BAR DO CABELUDO")
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        titulo("*** NOVO CONSUMO ***")
+    )
+
+    conteudo.append(
+        titulo("COZINHA")
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        identificacao_destaque(
+            pedido
+        )
+    )
+
+    conteudo.append("")
+
+    conteudo.extend(
+        identificacao_pedido(
+            pedido
+        )
+    )
+
+    conteudo.append(
+        linha()
+    )
+
+
+    for item in itens_novos:
+
+        produto = item.produto
+
+        texto = (
+            f"{item.quantidade}x "
+            f"{produto.nome.upper()}"
+        )
+
+        if item.tipo_item == "adicional":
+
+            texto += " [ADICIONAL]"
+
+        conteudo.append(
+            texto
+        )
+
+
+    conteudo.append(
+        linha()
+    )
+
+    conteudo.append(
+        titulo(
+            "PREPARAR NA COZINHA"
+        )
+    )
+
+    conteudo.append(
+        identificacao_final(
+            pedido
+        )
+    )
+
+    conteudo.append(
+        "\n\n\n"
+    )
+
+    return "\n".join(
+        conteudo
+    )
 
 
 # =========================================================
@@ -255,31 +648,54 @@ def enviar_para_impressora(
     conteudo
 ):
 
+    if not conteudo:
+        return True
+
+
     if MODO_TESTE:
 
         print("\n")
-        print("=" * 60)
+
+        print(
+            "=" * 60
+        )
+
         print(
             f"IMPRESSAO TESTE -> "
             f"{impressora['nome'].upper()}"
         )
-        print("=" * 60)
 
-        print(conteudo)
+        print(
+            "=" * 60
+        )
 
-        print("=" * 60)
+        print(
+            conteudo
+        )
+
+        print(
+            "=" * 60
+        )
+
         print("\n")
 
         return True
 
-    # Quando as Elgin chegarem,
-    # entra aqui o envio ESC/POS pela rede.
+
+    # =====================================================
+    # IMPRESSÃO REAL
+    # =====================================================
+    #
+    # Quando as impressoras Elgin chegarem,
+    # o envio ESC/POS pela rede será colocado aqui.
     #
     # IP:
     # impressora["ip"]
     #
-    # Porta:
+    # PORTA:
     # impressora["porta"]
+    #
+    # =====================================================
 
     return False
 
@@ -288,16 +704,44 @@ def enviar_para_impressora(
 # FUNÇÕES PÚBLICAS
 # =========================================================
 
-def imprimir_churrasqueira(pedido):
+def imprimir_churrasqueira(
+    pedido,
+    itens=None
+):
 
     conteudo = (
         montar_ticket_churrasqueira(
-            pedido
+            pedido,
+            itens
         )
     )
 
+    if not conteudo:
+        return True
+
     return enviar_para_impressora(
         IMPRESSORA_CHURRASQUEIRA,
+        conteudo
+    )
+
+
+def imprimir_cozinha_direta(
+    pedido,
+    itens=None
+):
+
+    conteudo = (
+        montar_ticket_cozinha_direta(
+            pedido,
+            itens
+        )
+    )
+
+    if not conteudo:
+        return True
+
+    return enviar_para_impressora(
+        IMPRESSORA_COZINHA,
         conteudo
     )
 
@@ -316,78 +760,6 @@ def imprimir_cozinha(pedido):
     )
 
 
-# =========================================================
-# TICKET - NOVO CONSUMO / CARNE ADICIONAL
-# =========================================================
-
-def montar_ticket_adicional_churrasqueira(
-    pedido,
-    itens_novos
-):
-
-    conteudo = []
-
-    conteudo.append(
-        titulo("BAR DO CABELUDO")
-    )
-
-    conteudo.append(linha())
-
-    conteudo.append(
-        titulo("*** NOVO CONSUMO ***")
-    )
-
-    conteudo.append(
-        titulo("CHURRASQUEIRA")
-    )
-
-    conteudo.append(linha())
-
-    conteudo.extend(
-        identificacao_pedido(pedido)
-    )
-
-    conteudo.append(linha())
-
-    for item in itens_novos:
-
-        produto = item.produto
-
-        texto = (
-            f"{item.quantidade}x "
-            f"{produto.nome.upper()}"
-        )
-
-        if item.tipo_item == "adicional":
-            texto += " - ADICIONAL"
-
-        conteudo.append(texto)
-
-    conteudo.append(linha())
-
-    if pedido.tipo_atendimento == "marmitex":
-
-        conteudo.append(
-            titulo(
-                f"ADICIONAL - MARMITEX "
-                f"#{pedido.numero_marmitex}"
-            )
-        )
-
-    elif pedido.mesa:
-
-        conteudo.append(
-            titulo(
-                f"ADICIONAL - MESA "
-                f"{pedido.mesa.numero:02d}"
-            )
-        )
-
-    conteudo.append("\n\n\n")
-
-    return "\n".join(conteudo)
-
-
 def imprimir_adicional_churrasqueira(
     pedido,
     itens_novos
@@ -396,6 +768,7 @@ def imprimir_adicional_churrasqueira(
     if not itens_novos:
         return True
 
+
     conteudo = (
         montar_ticket_adicional_churrasqueira(
             pedido,
@@ -403,7 +776,135 @@ def imprimir_adicional_churrasqueira(
         )
     )
 
+
     return enviar_para_impressora(
         IMPRESSORA_CHURRASQUEIRA,
         conteudo
     )
+
+
+def imprimir_adicional_cozinha(
+    pedido,
+    itens_novos
+):
+
+    if not itens_novos:
+        return True
+
+
+    conteudo = (
+        montar_ticket_adicional_cozinha(
+            pedido,
+            itens_novos
+        )
+    )
+
+
+    return enviar_para_impressora(
+        IMPRESSORA_COZINHA,
+        conteudo
+    )
+
+
+# =========================================================
+# IMPRESSÃO INICIAL POR DESTINO
+# =========================================================
+
+def imprimir_destinos_iniciais(pedido):
+
+    itens_churrasqueira = (
+        itens_por_destino(
+            pedido,
+            "churrasqueira"
+        )
+    )
+
+    itens_cozinha = (
+        itens_por_destino(
+            pedido,
+            "cozinha"
+        )
+    )
+
+
+    if itens_churrasqueira:
+
+        imprimir_churrasqueira(
+            pedido,
+            itens_churrasqueira
+        )
+
+
+    if itens_cozinha:
+
+        imprimir_cozinha_direta(
+            pedido,
+            itens_cozinha
+        )
+
+
+    return {
+        "churrasqueira": bool(
+            itens_churrasqueira
+        ),
+
+        "cozinha": bool(
+            itens_cozinha
+        )
+    }
+
+
+# =========================================================
+# NOVO CONSUMO POR DESTINO
+# =========================================================
+
+def imprimir_novo_consumo_por_destino(
+    pedido,
+    itens_novos
+):
+
+    itens_churrasqueira = []
+
+    itens_cozinha = []
+
+
+    for item in itens_novos:
+
+        produto = item.produto
+
+        destino = destino_produto(
+            produto
+        )
+
+
+        if destino == "churrasqueira":
+
+            itens_churrasqueira.append(
+                item
+            )
+
+
+        elif destino == "cozinha":
+
+            itens_cozinha.append(
+                item
+            )
+
+
+    if itens_churrasqueira:
+
+        imprimir_adicional_churrasqueira(
+            pedido,
+            itens_churrasqueira
+        )
+
+
+    if itens_cozinha:
+
+        imprimir_adicional_cozinha(
+            pedido,
+            itens_cozinha
+        )
+
+
+    return True

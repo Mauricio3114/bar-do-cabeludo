@@ -480,6 +480,59 @@
 
                     </div>
 
+                    <!-- DESTINO DO PREPARO -->
+
+                    <div class="field field-full">
+
+                        <label>
+                            Destino do Preparo
+                        </label>
+
+                        {% set destino_atual =
+                            produto.destino_preparo
+                            if produto
+                            else request.form.get(
+                                'destino_preparo',
+                                'sem_preparo'
+                            )
+                        %}
+
+                        <select
+                            name="destino_preparo"
+                            required
+                        >
+
+                            <option
+                                value="churrasqueira"
+                                {% if destino_atual == "churrasqueira" %}
+                                    selected
+                                {% endif %}
+                            >
+                                🔥 Churrasqueira
+                            </option>
+
+                            <option
+                                value="cozinha"
+                                {% if destino_atual == "cozinha" %}
+                                    selected
+                                {% endif %}
+                            >
+                                🍲 Cozinha
+                            </option>
+
+                            <option
+                                value="sem_preparo"
+                                {% if destino_atual == "sem_preparo" %}
+                                    selected
+                                {% endif %}
+                            >
+                                ➖ Sem preparo
+                            </option>
+
+                        </select>
+
+                    </div>
+
 
                     <!-- PREÇO -->
 
