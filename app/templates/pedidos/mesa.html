@@ -30,7 +30,8 @@
         }
 
         button,
-        input {
+        input,
+        select {
             font-family: inherit;
         }
 
@@ -123,6 +124,11 @@
             color: #92400e;
         }
 
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
         /* =================================================
            SEÇÕES
         ================================================= */
@@ -147,6 +153,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+
+            gap: 10px;
         }
 
         .secao-header h2 {
@@ -163,63 +171,105 @@
         }
 
         /* =================================================
-           CARNE PRINCIPAL
+           PRATOS
         ================================================= */
 
-        .opcoes-grid {
+        .pratos-lista {
             display: grid;
-
-            grid-template-columns:
-                repeat(auto-fill, minmax(150px, 1fr));
-
-            gap: 8px;
+            gap: 12px;
         }
 
-        .opcao-radio input {
-            display: none;
+        .prato-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 13px;
+            overflow: hidden;
+            background: #fafafa;
         }
 
-        .opcao-radio label {
-            min-height: 72px;
-
-            border: 2px solid #e5e7eb;
-
-            border-radius: 11px;
-
-            padding: 10px;
-
-            cursor: pointer;
+        .prato-topo {
+            padding: 10px 12px;
 
             display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: space-between;
 
-            transition: .12s;
+            background: #17100c;
+            color: #fff;
         }
 
-        .opcao-radio label strong {
+        .prato-topo strong {
             font-size: 12px;
         }
 
-        .opcao-radio label span {
-            color: #666;
-            font-size: 11px;
-            font-weight: 700;
+        .btn-remover-prato {
+            border: 0;
+            background: #dc2626;
+            color: #fff;
+
+            min-width: 30px;
+            height: 30px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 14px;
         }
 
-        .opcao-radio input:checked + label {
+        .prato-conteudo {
+            padding: 12px;
+        }
+
+        .campo-prato {
+            margin-bottom: 12px;
+        }
+
+        .campo-prato label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .select-carne {
+            width: 100%;
+            min-height: 46px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+
+            padding: 0 11px;
+
+            background: #fff;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            outline: none;
+        }
+
+        .select-carne:focus {
             border-color: #b45309;
-            background: #fff7ed;
 
             box-shadow:
-                0 0 0 2px rgba(180,83,9,.08);
+                0 0 0 3px rgba(180,83,9,.08);
         }
 
-        /* =================================================
-           ACOMPANHAMENTOS
-        ================================================= */
+        .titulo-acomp-prato {
+            margin: 5px 0 8px;
 
-        .checks-grid {
+            font-size: 10px;
+            font-weight: 900;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .checks-prato {
             display: grid;
 
             grid-template-columns:
@@ -228,12 +278,12 @@
             gap: 7px;
         }
 
-        .check-item input {
+        .check-prato input {
             display: none;
         }
 
-        .check-item label {
-            min-height: 43px;
+        .check-prato label {
+            min-height: 42px;
 
             border: 1px solid #ddd;
 
@@ -248,48 +298,44 @@
 
             font-size: 11px;
             font-weight: 700;
+
+            background: #fff;
         }
 
-        .check-item input:checked + label {
+        .check-prato input:checked + label {
             background: #ecfdf5;
             border-color: #86efac;
             color: #166534;
         }
 
-        .check-item input:checked + label::before {
+        .check-prato input:checked + label::before {
             content: "✓";
             margin-right: 6px;
             font-weight: 900;
         }
 
-        /* =================================================
-           QUANTIDADE
-        ================================================= */
+        .btn-adicionar-prato {
+            width: 100%;
 
-        .quantidade-prato {
-            margin-top: 10px;
+            min-height: 46px;
 
-            display: flex;
-            align-items: center;
-            gap: 9px;
+            margin-top: 11px;
+
+            border: 1px dashed #b45309;
+
+            border-radius: 11px;
+
+            background: #fff7ed;
+            color: #9a3412;
+
+            cursor: pointer;
+
+            font-size: 11px;
+            font-weight: 900;
         }
 
-        .quantidade-prato label {
-            font-size: 10px;
-            font-weight: 800;
-        }
-
-        .quantidade-prato input {
-            width: 70px;
-            height: 38px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 8px;
-
-            text-align: center;
-
-            font-weight: 800;
+        .btn-adicionar-prato:hover {
+            background: #ffedd5;
         }
 
         /* =================================================
@@ -385,7 +431,6 @@
         .vazio {
             color: #999;
             font-size: 11px;
-
             padding: 5px;
         }
 
@@ -457,7 +502,7 @@
         }
 
         /* =================================================
-           PEDIDO JÁ EXISTENTE
+           PEDIDO EXISTENTE
         ================================================= */
 
         .pedido-existente {
@@ -505,21 +550,6 @@
                 font-size: 20px;
             }
 
-            .opcoes-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
-            .opcao-radio label {
-                min-height: 67px;
-                padding: 9px;
-            }
-
-            .checks-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
             .secao-body {
                 padding: 9px;
             }
@@ -529,6 +559,11 @@
                 padding: 7px 8px;
             }
 
+            .checks-prato {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
             .rodape-pedido {
                 padding: 8px 10px;
             }
@@ -536,6 +571,10 @@
             .btn-enviar {
                 min-height: 46px;
                 padding: 0 15px;
+            }
+
+            .prato-conteudo {
+                padding: 9px;
             }
 
         }
@@ -622,7 +661,7 @@
             </h1>
 
             <p>
-                Monte o pedido. O sistema enviará cada item para o setor correto.
+                Monte cada prato separadamente.
             </p>
 
         </div>
@@ -634,7 +673,7 @@
         >
 
             <!-- =========================================
-                 CARNE
+                 PRATOS
             ========================================== -->
 
             <section class="secao">
@@ -642,11 +681,11 @@
                 <div class="secao-header">
 
                     <h2>
-                        🥩 Carne / Prato
+                        🥩 Pratos da Mesa
                     </h2>
 
                     <small>
-                        Escolha 1
+                        1 prato por pessoa
                     </small>
 
                 </div>
@@ -654,129 +693,20 @@
 
                 <div class="secao-body">
 
-                    {% if carnes %}
-
-                        <div class="opcoes-grid">
-
-                            {% for produto in carnes %}
-
-                                <div class="opcao-radio">
-
-                                    <input
-                                        type="radio"
-                                        name="carne_id"
-                                        id="carne_{{ produto.id }}"
-                                        value="{{ produto.id }}"
-                                        data-preco="{{ produto.preco }}"
-                                    >
-
-                                    <label for="carne_{{ produto.id }}">
-
-                                        <strong>
-                                            {{ produto.nome }}
-                                        </strong>
-
-                                        <span>
-                                            R$
-                                            {{
-                                                "{:,.2f}".format(produto.preco)
-                                                .replace(",", "X")
-                                                .replace(".", ",")
-                                                .replace("X", ".")
-                                            }}
-                                        </span>
-
-                                    </label>
-
-                                </div>
-
-                            {% endfor %}
-
-                        </div>
+                    <div
+                        id="pratosLista"
+                        class="pratos-lista"
+                    >
+                    </div>
 
 
-                        <div class="quantidade-prato">
-
-                            <label>
-                                Quantidade de pratos
-                            </label>
-
-                            <input
-                                type="number"
-                                id="quantidade_prato"
-                                name="quantidade_prato"
-                                min="1"
-                                value="1"
-                            >
-
-                        </div>
-
-                    {% else %}
-
-                        <div class="vazio">
-                            Nenhuma carne cadastrada.
-                        </div>
-
-                    {% endif %}
-
-                </div>
-
-            </section>
-
-
-            <!-- =========================================
-                 ACOMPANHAMENTOS
-            ========================================== -->
-
-            <section class="secao">
-
-                <div class="secao-header">
-
-                    <h2>
-                        🍚 Acompanhamentos
-                    </h2>
-
-                    <small>
-                        Marque o que o cliente quer
-                    </small>
-
-                </div>
-
-
-                <div class="secao-body">
-
-                    {% if acompanhamentos %}
-
-                        <div class="checks-grid">
-
-                            {% for produto in acompanhamentos %}
-
-                                <div class="check-item">
-
-                                    <input
-                                        type="checkbox"
-                                        name="acompanhamentos"
-                                        id="acomp_{{ produto.id }}"
-                                        value="{{ produto.id }}"
-                                    >
-
-                                    <label for="acomp_{{ produto.id }}">
-                                        {{ produto.nome }}
-                                    </label>
-
-                                </div>
-
-                            {% endfor %}
-
-                        </div>
-
-                    {% else %}
-
-                        <div class="vazio">
-                            Nenhum acompanhamento cadastrado.
-                        </div>
-
-                    {% endif %}
+                    <button
+                        type="button"
+                        class="btn-adicionar-prato"
+                        onclick="adicionarPrato()"
+                    >
+                        + ADICIONAR OUTRO PRATO
+                    </button>
 
                 </div>
 
@@ -1094,7 +1024,7 @@
                     <div class="secao-header">
 
                         <h2>
-                            Outros
+                            🍲 Outros Pratos / Itens
                         </h2>
 
                         <small>
@@ -1218,7 +1148,122 @@
 </main>
 
 
+<!-- =====================================================
+     MODELO DE PRATO
+====================================================== -->
+
+<template id="templatePrato">
+
+    <div class="prato-card">
+
+        <div class="prato-topo">
+
+            <strong class="numero-prato">
+                PRATO
+            </strong>
+
+            <button
+                type="button"
+                class="btn-remover-prato"
+                onclick="removerPrato(this)"
+                title="Remover prato"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="prato-conteudo">
+
+            <div class="campo-prato">
+
+                <label>
+                    Carne / Prato principal
+                </label>
+
+                <select
+                    class="select-carne prato-carne"
+                    required
+                    onchange="calcularTotal()"
+                >
+
+                    <option value="">
+                        Selecione a carne
+                    </option>
+
+                    {% for produto in carnes %}
+
+                        <option
+                            value="{{ produto.id }}"
+                            data-preco="{{ produto.preco }}"
+                        >
+                            {{ produto.nome }}
+                            -
+                            R$
+                            {{
+                                "{:,.2f}".format(produto.preco)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".")
+                            }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="titulo-acomp-prato">
+                Acompanhamentos deste prato
+            </div>
+
+
+            {% if acompanhamentos %}
+
+                <div class="checks-prato">
+
+                    {% for produto in acompanhamentos %}
+
+                        <div class="check-prato">
+
+                            <input
+                                type="checkbox"
+                                value="{{ produto.id }}"
+                                data-acomp-id="{{ produto.id }}"
+                            >
+
+                            <label>
+                                {{ produto.nome }}
+                            </label>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="vazio">
+                    Nenhum acompanhamento cadastrado.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</template>
+
+
 <script>
+
+    let contadorPratos = 0;
+
 
     function numero(valor) {
 
@@ -1233,13 +1278,169 @@
     }
 
 
-    function alterarQtd(id, diferenca) {
+    function adicionarPrato() {
+
+        contadorPratos++;
+
+        const template =
+            document.getElementById(
+                "templatePrato"
+            );
+
+        const clone =
+            template.content.cloneNode(true);
+
+        const card =
+            clone.querySelector(
+                ".prato-card"
+            );
+
+        card.dataset.indice =
+            contadorPratos;
+
+
+        const numeroPrato =
+            card.querySelector(
+                ".numero-prato"
+            );
+
+        numeroPrato.textContent =
+            "PRATO " + contadorPratos;
+
+
+        const selectCarne =
+            card.querySelector(
+                ".prato-carne"
+            );
+
+        selectCarne.name =
+            "prato_" +
+            contadorPratos +
+            "_carne_id";
+
+
+        const checks =
+            card.querySelectorAll(
+                ".check-prato input"
+            );
+
+        checks.forEach(
+            function(check) {
+
+                const acompId =
+                    check.dataset.acompId;
+
+                check.name =
+                    "prato_" +
+                    contadorPratos +
+                    "_acompanhamentos";
+
+                check.id =
+                    "prato_" +
+                    contadorPratos +
+                    "_acomp_" +
+                    acompId;
+
+                const label =
+                    check.nextElementSibling;
+
+                label.setAttribute(
+                    "for",
+                    check.id
+                );
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "pratosLista"
+            )
+            .appendChild(card);
+
+
+        atualizarNumeracao();
+
+        calcularTotal();
+
+    }
+
+
+    function removerPrato(botao) {
+
+        const lista =
+            document.getElementById(
+                "pratosLista"
+            );
+
+        const cards =
+            lista.querySelectorAll(
+                ".prato-card"
+            );
+
+        if (cards.length <= 1) {
+
+            alert(
+                "O pedido precisa ter pelo menos um prato."
+            );
+
+            return;
+
+        }
+
+
+        const card =
+            botao.closest(
+                ".prato-card"
+            );
+
+        card.remove();
+
+        atualizarNumeracao();
+
+        calcularTotal();
+
+    }
+
+
+    function atualizarNumeracao() {
+
+        const cards =
+            document.querySelectorAll(
+                "#pratosLista .prato-card"
+            );
+
+        cards.forEach(
+            function(card, posicao) {
+
+                const titulo =
+                    card.querySelector(
+                        ".numero-prato"
+                    );
+
+                titulo.textContent =
+                    "PRATO " +
+                    (posicao + 1);
+
+            }
+        );
+
+    }
+
+
+    function alterarQtd(
+        id,
+        diferenca
+    ) {
 
         const input =
             document.getElementById(id);
 
         let atual =
-            parseInt(input.value || 0);
+            parseInt(
+                input.value || 0
+            );
 
         atual += diferenca;
 
@@ -1247,7 +1448,8 @@
             atual = 0;
         }
 
-        input.value = atual;
+        input.value =
+            atual;
 
         calcularTotal();
 
@@ -1258,88 +1460,93 @@
 
         let total = 0;
 
-        const carneSelecionada =
-            document.querySelector(
-                'input[name="carne_id"]:checked'
-            );
 
-        const quantidadePrato =
-            document.getElementById(
-                "quantidade_prato"
-            );
-
-        if (
-            carneSelecionada
-            && quantidadePrato
-        ) {
-
-            total +=
-                numero(
-                    carneSelecionada.dataset.preco
-                )
-                *
-                numero(
-                    quantidadePrato.value
-                );
-
-        }
-
+        /* ==============================================
+           PRATOS
+        ============================================== */
 
         document
-            .querySelectorAll(".item-valor")
-            .forEach(function(input) {
+            .querySelectorAll(
+                ".prato-carne"
+            )
+            .forEach(
+                function(select) {
 
-                total +=
-                    numero(input.dataset.preco)
-                    *
-                    numero(input.value);
+                    const option =
+                        select.options[
+                            select.selectedIndex
+                        ];
 
-            });
+                    if (
+                        option
+                        && option.dataset.preco
+                    ) {
 
+                        total += numero(
+                            option.dataset.preco
+                        );
 
-        document.getElementById(
-            "totalPedido"
-        ).textContent =
-            total.toLocaleString(
-                "pt-BR",
-                {
-                    style: "currency",
-                    currency: "BRL"
+                    }
+
                 }
             );
 
-    }
 
+        /* ==============================================
+           DEMAIS ITENS
+        ============================================== */
 
-    document
-        .querySelectorAll(
-            'input[name="carne_id"]'
-        )
-        .forEach(function(input) {
+        document
+            .querySelectorAll(
+                ".item-valor"
+            )
+            .forEach(
+                function(input) {
 
-            input.addEventListener(
-                "change",
-                calcularTotal
+                    total +=
+                        numero(
+                            input.dataset.preco
+                        )
+                        *
+                        numero(
+                            input.value
+                        );
+
+                }
             );
 
-        });
 
-
-    const quantidadePrato =
-        document.getElementById(
-            "quantidade_prato"
-        );
-
-    if (quantidadePrato) {
-
-        quantidadePrato.addEventListener(
-            "input",
-            calcularTotal
-        );
+        document
+            .getElementById(
+                "totalPedido"
+            )
+            .textContent =
+                total.toLocaleString(
+                    "pt-BR",
+                    {
+                        style: "currency",
+                        currency: "BRL"
+                    }
+                );
 
     }
+
+
+    /* =====================================================
+       CRIA PRIMEIRO PRATO AUTOMATICAMENTE
+    ====================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            adicionarPrato();
+
+        }
+    );
 
 </script>
 
 </body>
+
 </html>

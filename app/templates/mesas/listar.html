@@ -133,7 +133,14 @@
         }
 
         .menu-sair {
-            color: #fca5a5 !important;
+            color: #fff !important;
+            background: #991b1b !important;
+            border: 1px solid #dc2626;
+            white-space: nowrap;
+        }
+
+        .menu-sair:hover {
+            background: #b91c1c !important;
         }
 
         /* ==================================================
@@ -548,6 +555,13 @@
 
             <nav class="menu-admin">
 
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="menu-sair"
+                >
+                    🚪 Sair
+                </a>
+
                 {% if current_user.perfil == "admin" %}
 
                     <a href="{{ url_for('mesas.listar') }}">
@@ -581,14 +595,6 @@
                     </a>
 
                 {% endif %}
-
-
-                <a
-                    href="{{ url_for('auth.logout') }}"
-                    class="menu-sair"
-                >
-                    Sair
-                </a>
 
             </nav>
 

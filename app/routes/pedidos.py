@@ -69,9 +69,9 @@ def mesa(mesa_id):
             )
         )
 
-    # -----------------------------------------------------
-    # Produtos ativos
-    # -----------------------------------------------------
+    # =====================================================
+    # PRODUTOS ATIVOS
+    # =====================================================
 
     carnes = (
         Produto.query
@@ -157,6 +157,10 @@ def mesa(mesa_id):
 
     if request.method == "POST":
 
+        # -------------------------------------------------
+        # Evita dois pedidos abertos na mesma mesa
+        # -------------------------------------------------
+
         if pedido:
 
             flash(
@@ -172,17 +176,59 @@ def mesa(mesa_id):
             )
 
         # =================================================
-        # CARNE / PRATO PRINCIPAL
+        # LÊ OS PRATOS DA NOVA TELA
+        #
+        # Exemplo:
+        #
+        # prato_1_carne_id
+        # prato_1_acompanhamentos
+        #
+        # prato_2_carne_id
+        # prato_2_acompanhamentos
         # =================================================
 
-        carne_id = request.form.get(
-            "carne_id",
-            type=int
-        )
+        pratos_selecionados = []
 
-        carne = None
+        indices_pratos = set()
 
-        if carne_id:
+        for nome_campo in request.form.keys():
+
+            if (
+                nome_campo.startswith("prato_")
+                and nome_campo.endswith("_carne_id")
+            ):
+
+                partes = nome_campo.split("_")
+
+                if len(partes) >= 4:
+
+                    try:
+
+                        indice = int(
+                            partes[1]
+                        )
+
+                        indices_pratos.add(
+                            indice
+                        )
+
+                    except (TypeError, ValueError):
+
+                        continue
+
+        # -------------------------------------------------
+        # Monta cada prato separadamente
+        # -------------------------------------------------
+
+        for indice in sorted(indices_pratos):
+
+            carne_id = request.form.get(
+                f"prato_{indice}_carne_id",
+                type=int
+            )
+
+            if not carne_id:
+                continue
 
             carne = db.session.get(
                 Produto,
@@ -194,8 +240,57 @@ def mesa(mesa_id):
                 or not carne.ativo
                 or carne.tipo != "carne"
             ):
+                continue
 
-                carne = None
+            acompanhamento_ids = request.form.getlist(
+                f"prato_{indice}_acompanhamentos"
+            )
+
+            acompanhamentos_do_prato = []
+
+            ids_ja_adicionados = set()
+
+            for acompanhamento_id in acompanhamento_ids:
+
+                try:
+
+                    acompanhamento_id = int(
+                        acompanhamento_id
+                    )
+
+                except (TypeError, ValueError):
+
+                    continue
+
+                # Evita acompanhamento duplicado
+                if acompanhamento_id in ids_ja_adicionados:
+                    continue
+
+                acompanhamento = db.session.get(
+                    Produto,
+                    acompanhamento_id
+                )
+
+                if (
+                    acompanhamento
+                    and acompanhamento.ativo
+                    and acompanhamento.tipo == "acompanhamento"
+                ):
+
+                    acompanhamentos_do_prato.append(
+                        acompanhamento
+                    )
+
+                    ids_ja_adicionados.add(
+                        acompanhamento.id
+                    )
+
+            pratos_selecionados.append(
+                {
+                    "carne": carne,
+                    "acompanhamentos": acompanhamentos_do_prato
+                }
+            )
 
         # =================================================
         # VERIFICA SE EXISTE OUTRO PRATO SELECIONADO
@@ -215,15 +310,21 @@ def mesa(mesa_id):
                 quantidade
                 and quantidade > 0
             ):
+
                 possui_outro_prato = True
                 break
 
-        # Precisa existir pelo menos uma carne
-        # OU algum prato da categoria "outro".
-        if not carne and not possui_outro_prato:
+        # =================================================
+        # VALIDAÇÃO
+        # =================================================
+
+        if (
+            not pratos_selecionados
+            and not possui_outro_prato
+        ):
 
             flash(
-                "Selecione uma carne ou um prato.",
+                "Selecione pelo menos uma carne ou um prato.",
                 "danger"
             )
 
@@ -256,37 +357,36 @@ def mesa(mesa_id):
 
         total_pedido = Decimal("0.00")
 
-        item_prato = None
-
         # =================================================
-        # CARNE PRINCIPAL
+        # CRIA CADA PRATO INDIVIDUALMENTE
         # =================================================
 
-        if carne:
+        for prato in pratos_selecionados:
 
-            quantidade_prato = request.form.get(
-                "quantidade_prato",
-                1,
-                type=int
+            carne = prato["carne"]
+
+            acompanhamentos_do_prato = (
+                prato["acompanhamentos"]
             )
 
-            if (
-                quantidade_prato is None
-                or quantidade_prato < 1
-            ):
-                quantidade_prato = 1
+            if carne.preco is None:
+                continue
 
-            valor_prato = (
-                carne.preco
-                * quantidade_prato
+            valor_unitario = Decimal(
+                str(carne.preco)
             )
+
+            # Cada card da tela representa UM prato
+            quantidade = 1
+
+            valor_prato = valor_unitario
 
             item_prato = ItemPedido(
                 pedido_id=novo_pedido.id,
                 produto_id=carne.id,
                 tipo_item="normal",
-                quantidade=quantidade_prato,
-                valor_unitario=carne.preco,
+                quantidade=quantidade,
+                valor_unitario=valor_unitario,
                 valor_total=valor_prato
             )
 
@@ -294,53 +394,26 @@ def mesa(mesa_id):
                 item_prato
             )
 
+            # Precisamos do ID do item para vincular
+            # os acompanhamentos exclusivamente a ele.
             db.session.flush()
 
-            total_pedido += valor_prato
+            # =================================================
+            # ACOMPANHAMENTOS EXCLUSIVOS DESTE PRATO
+            # =================================================
 
-        # =================================================
-        # ACOMPANHAMENTOS
-        # =================================================
+            for acompanhamento in acompanhamentos_do_prato:
 
-        acompanhamento_ids = request.form.getlist(
-            "acompanhamentos"
-        )
-
-        # Os acompanhamentos atuais ficam vinculados
-        # ao prato principal.
-        if item_prato:
-
-            for acompanhamento_id in acompanhamento_ids:
-
-                try:
-
-                    acompanhamento_id = int(
-                        acompanhamento_id
-                    )
-
-                except (TypeError, ValueError):
-
-                    continue
-
-                acompanhamento = db.session.get(
-                    Produto,
-                    acompanhamento_id
+                vinculo = ItemPedidoAcompanhamento(
+                    item_pedido_id=item_prato.id,
+                    produto_id=acompanhamento.id
                 )
 
-                if (
-                    acompanhamento
-                    and acompanhamento.ativo
-                    and acompanhamento.tipo == "acompanhamento"
-                ):
+                db.session.add(
+                    vinculo
+                )
 
-                    vinculo = ItemPedidoAcompanhamento(
-                        item_pedido_id=item_prato.id,
-                        produto_id=acompanhamento.id
-                    )
-
-                    db.session.add(
-                        vinculo
-                    )
+            total_pedido += valor_prato
 
         # =================================================
         # ADICIONAIS
@@ -363,8 +436,14 @@ def mesa(mesa_id):
             if adicional.preco_adicional is None:
                 continue
 
+            valor_unitario = Decimal(
+                str(
+                    adicional.preco_adicional
+                )
+            )
+
             valor_total_adicional = (
-                adicional.preco_adicional
+                valor_unitario
                 * quantidade
             )
 
@@ -373,7 +452,7 @@ def mesa(mesa_id):
                 produto_id=adicional.id,
                 tipo_item="adicional",
                 quantidade=quantidade,
-                valor_unitario=adicional.preco_adicional,
+                valor_unitario=valor_unitario,
                 valor_total=valor_total_adicional
             )
 
@@ -412,8 +491,14 @@ def mesa(mesa_id):
             if produto.preco is None:
                 continue
 
+            valor_unitario = Decimal(
+                str(
+                    produto.preco
+                )
+            )
+
             valor_total_item = (
-                produto.preco
+                valor_unitario
                 * quantidade
             )
 
@@ -422,7 +507,7 @@ def mesa(mesa_id):
                 produto_id=produto.id,
                 tipo_item="normal",
                 quantidade=quantidade,
-                valor_unitario=produto.preco,
+                valor_unitario=valor_unitario,
                 valor_total=valor_total_item
             )
 
@@ -441,8 +526,8 @@ def mesa(mesa_id):
         novo_pedido.subtotal = total_pedido
         novo_pedido.total = total_pedido
 
-        # Flush para garantir que todos os itens estejam
-        # disponíveis para separar os destinos.
+        # Garante que itens e vínculos estejam disponíveis
+        # antes de verificar destinos e imprimir.
         db.session.flush()
 
         # =================================================
@@ -467,11 +552,14 @@ def mesa(mesa_id):
             for item in novo_pedido.itens
         )
 
-        # Se existir qualquer item da churrasqueira,
-        # o fluxo principal aguarda a carne.
+        # =================================================
+        # DEFINE FLUXO
+        # =================================================
+
         if possui_churrasqueira:
 
             novo_pedido.status = "churrasqueira"
+
             novo_pedido.enviado_churrasqueira_em = (
                 datetime.utcnow()
             )
@@ -481,6 +569,7 @@ def mesa(mesa_id):
         elif possui_cozinha:
 
             novo_pedido.status = "cozinha"
+
             novo_pedido.enviado_cozinha_em = (
                 datetime.utcnow()
             )
@@ -489,12 +578,17 @@ def mesa(mesa_id):
 
         else:
 
-            # Pedido sem preparo:
-            # bebida/sobremesa/etc.
             novo_pedido.status = "servido"
-            novo_pedido.servido_em = datetime.utcnow()
+
+            novo_pedido.servido_em = (
+                datetime.utcnow()
+            )
 
             mesa.status = "servido"
+
+        # =================================================
+        # SALVA
+        # =================================================
 
         db.session.commit()
 
@@ -559,6 +653,10 @@ def mesa(mesa_id):
                 "mesas.listar"
             )
         )
+
+    # =====================================================
+    # GET
+    # =====================================================
 
     return render_template(
         "pedidos/mesa.html",
