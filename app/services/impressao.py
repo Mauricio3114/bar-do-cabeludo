@@ -1,11 +1,14 @@
 from datetime import datetime
+import win32print
 
 
 # =========================================================
 # CONFIGURAÇÃO
 # =========================================================
 
-MODO_TESTE = True
+MODO_TESTE = False
+
+NOME_IMPRESSORA_WINDOWS = "C3TECH IT-110"
 
 
 IMPRESSORA_CHURRASQUEIRA = {
@@ -639,10 +642,6 @@ def montar_ticket_adicional_cozinha(
     )
 
 
-# =========================================================
-# ENVIO
-# =========================================================
-
 def enviar_para_impressora(
     impressora,
     conteudo
@@ -651,53 +650,115 @@ def enviar_para_impressora(
     if not conteudo:
         return True
 
+    # =====================================================
+    # MODO TESTE
+    # =====================================================
 
     if MODO_TESTE:
 
         print("\n")
-
-        print(
-            "=" * 60
-        )
+        print("=" * 60)
 
         print(
             f"IMPRESSAO TESTE -> "
             f"{impressora['nome'].upper()}"
         )
 
-        print(
-            "=" * 60
-        )
-
-        print(
-            conteudo
-        )
-
-        print(
-            "=" * 60
-        )
-
+        print("=" * 60)
+        print(conteudo)
+        print("=" * 60)
         print("\n")
 
         return True
 
-
     # =====================================================
-    # IMPRESSÃO REAL
-    # =====================================================
-    #
-    # Quando as impressoras Elgin chegarem,
-    # o envio ESC/POS pela rede será colocado aqui.
-    #
-    # IP:
-    # impressora["ip"]
-    #
-    # PORTA:
-    # impressora["porta"]
-    #
+    # IMPRESSÃO REAL - WINDOWS / C3TECH IT-110
     # =====================================================
 
-    return False
+    try:
+
+        nome_impressora = NOME_IMPRESSORA_WINDOWS
+
+        print(
+            f"[IMPRESSAO] Enviando para "
+            f"{nome_impressora}..."
+        )
+
+        # Abre a impressora instalada no Windows
+        handle = win32print.OpenPrinter(
+            nome_impressora
+        )
+
+        try:
+
+            # Inicia um documento RAW no spooler
+            job = win32print.StartDocPrinter(
+                handle,
+                1,
+                (
+                    "Bar do Cabeludo",
+                    None,
+                    "RAW"
+                )
+            )
+
+            try:
+
+                win32print.StartPagePrinter(
+                    handle
+                )
+
+                # Inicializa a impressora ESC/POS
+                dados = b"\x1b\x40"
+
+                # Conteúdo do ticket
+                dados += conteudo.encode(
+                    "cp850",
+                    errors="replace"
+                )
+
+                # Avança papel
+                dados += b"\n\n\n"
+
+                # Corte total ESC/POS
+                dados += b"\x1d\x56\x00"
+
+                win32print.WritePrinter(
+                    handle,
+                    dados
+                )
+
+                win32print.EndPagePrinter(
+                    handle
+                )
+
+            finally:
+
+                win32print.EndDocPrinter(
+                    handle
+                )
+
+        finally:
+
+            win32print.ClosePrinter(
+                handle
+            )
+
+        print(
+            f"[IMPRESSAO] OK -> "
+            f"{impressora['nome']}"
+        )
+
+        return True
+
+    except Exception as erro:
+
+        print(
+            f"[ERRO IMPRESSAO] "
+            f"{impressora['nome']}: {erro}"
+        )
+
+        return False
 
 
 # =========================================================
