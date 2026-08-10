@@ -8,20 +8,16 @@ import win32print
 
 MODO_TESTE = False
 
-NOME_IMPRESSORA_WINDOWS = "C3TECH IT-110"
-
 
 IMPRESSORA_CHURRASQUEIRA = {
     "nome": "Churrasqueira",
-    "ip": "192.168.0.201",
-    "porta": 9100,
+    "windows": "C3TECH IT-110",
 }
 
 
 IMPRESSORA_COZINHA = {
     "nome": "Cozinha",
-    "ip": "192.168.0.202",
-    "porta": 9100,
+    "windows": "C3TECH IT-110 COZINHA",
 }
 
 
@@ -677,7 +673,7 @@ def enviar_para_impressora(
 
     try:
 
-        nome_impressora = NOME_IMPRESSORA_WINDOWS
+        nome_impressora = impressora["windows"]
 
         print(
             f"[IMPRESSAO] Enviando para "
