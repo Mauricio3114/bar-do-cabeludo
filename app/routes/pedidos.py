@@ -24,6 +24,12 @@ from app.services.impressao import (
     imprimir_novo_consumo_por_destino
 )
 
+from app.services.fila_impressao import (
+    enfileirar_pedido_inicial,
+    enfileirar_cozinha,
+    enfileirar_novo_consumo
+)
+
 
 pedidos_bp = Blueprint(
     "pedidos",
@@ -593,19 +599,23 @@ def mesa(mesa_id):
         db.session.commit()
 
         # =================================================
-        # IMPRESSÃO AUTOMÁTICA POR DESTINO
+        # FILA DE IMPRESSÃO
         # =================================================
 
         try:
 
-            imprimir_destinos_iniciais(
+            enfileirar_pedido_inicial(
                 novo_pedido
             )
 
+            db.session.commit()
+
         except Exception as erro:
 
+            db.session.rollback()
+
             print(
-                "ERRO IMPRESSÃO INICIAL:",
+                "ERRO FILA IMPRESSÃO INICIAL:",
                 erro
             )
 
@@ -733,10 +743,19 @@ def carne_pronta(pedido_id):
     # =====================================================
 
     try:
-        imprimir_cozinha(pedido)
+
+        enfileirar_cozinha(
+            pedido
+        )
+
+        db.session.commit()
+
     except Exception as erro:
+
+        db.session.rollback()
+
         print(
-            "ERRO IMPRESSÃO COZINHA:",
+            "ERRO FILA IMPRESSÃO COZINHA:",
             erro
         )
 
@@ -1087,15 +1106,19 @@ def adicionar_consumo(pedido_id):
 
         try:
 
-            imprimir_novo_consumo_por_destino(
+            enfileirar_novo_consumo(
                 pedido,
                 itens_novos
             )
 
+            db.session.commit()
+
         except Exception as erro:
 
+            db.session.rollback()
+
             print(
-                "ERRO IMPRESSÃO NOVO CONSUMO:",
+                "ERRO FILA IMPRESSÃO NOVO CONSUMO:",
                 erro
             )
 

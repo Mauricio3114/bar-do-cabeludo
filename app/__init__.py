@@ -61,6 +61,7 @@ def create_app():
     from app.models.pedido import Pedido
     from app.models.item_pedido import ItemPedido
     from app.models.item_pedido_acompanhamento import ItemPedidoAcompanhamento
+    from app.models.fila_impressao import FilaImpressao
 
 
     # =====================================================
