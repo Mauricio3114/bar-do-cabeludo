@@ -1,5 +1,20 @@
 from datetime import datetime
-import win32print
+import os
+import platform
+
+# =========================================================
+# IMPRESSÃO WINDOWS
+# =========================================================
+# O Render roda Linux e não possui win32print.
+# A impressão física será executada somente no ASUS/Windows.
+
+if platform.system() == "Windows":
+    try:
+        import win32print
+    except ImportError:
+        win32print = None
+else:
+    win32print = None
 
 
 # =========================================================
@@ -647,6 +662,21 @@ def enviar_para_impressora(
         return True
 
     # =====================================================
+    # AMBIENTE SEM IMPRESSÃO LOCAL
+    # =====================================================
+    # Render/Linux não possui win32print.
+    # A impressão física acontece somente no ASUS/Windows.
+
+    if win32print is None:
+
+        print(
+            f"[IMPRESSAO] Ambiente sem win32print. "
+            f"Impressao local ignorada: {impressora['nome']}"
+        )
+
+        return True
+
+    # =====================================================
     # MODO TESTE
     # =====================================================
 
@@ -688,7 +718,7 @@ def enviar_para_impressora(
         try:
 
             # Inicia um documento RAW no spooler
-            job = win32print.StartDocPrinter(
+            win32print.StartDocPrinter(
                 handle,
                 1,
                 (
