@@ -1711,19 +1711,23 @@ def novo_marmitex():
         db.session.commit()
 
         # =================================================
-        # IMPRESSÃO
+        # FILA DE IMPRESSÃO - MARMITEX
         # =================================================
 
         try:
 
-            imprimir_destinos_iniciais(
+            enfileirar_pedido_inicial(
                 novo_pedido
             )
 
+            db.session.commit()
+
         except Exception as erro:
 
+            db.session.rollback()
+
             print(
-                "ERRO IMPRESSÃO MARMITEX:",
+                "ERRO FILA IMPRESSÃO MARMITEX:",
                 erro
             )
 
