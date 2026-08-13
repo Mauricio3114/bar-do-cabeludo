@@ -167,3 +167,23 @@ def enfileirar_novo_consumo(
             tipo="novo_consumo",
             itens=itens_cozinha
         )
+
+
+# =========================================================
+# FILA DA COZINHA - PRATO ADICIONADO DEPOIS
+# =========================================================
+
+def enfileirar_cozinha_itens(
+    pedido,
+    itens
+):
+
+    if not pedido or not itens:
+        return
+
+    criar_trabalho_impressao(
+        pedido=pedido,
+        destino="cozinha",
+        tipo="novo_consumo",
+        itens=itens
+    )

@@ -27,6 +27,7 @@ from app.services.impressao import (
 from app.services.fila_impressao import (
     enfileirar_pedido_inicial,
     enfileirar_cozinha,
+    enfileirar_cozinha_itens,
     enfileirar_novo_consumo
 )
 
@@ -730,13 +731,26 @@ def carne_pronta(pedido_id):
             )
         )
 
-    pedido.status = "cozinha"
-    pedido.enviado_cozinha_em = datetime.utcnow()
+    # =====================================================
+    # MESA: CARNE PRONTA JÁ ACIONA COZINHA E LIBERA A MESA
+    # MARMITEX: MANTÉM O FLUXO ATUAL
+    # =====================================================
 
-    if pedido.mesa:
-        pedido.mesa.status = "cozinha"
+    if pedido.tipo_atendimento == "mesa":
 
-    db.session.commit()
+        pedido.status = "servido"
+        pedido.enviado_cozinha_em = datetime.utcnow()
+        pedido.servido_em = datetime.utcnow()
+
+    else:
+
+        pedido.status = "cozinha"
+        pedido.enviado_cozinha_em = datetime.utcnow()
+
+        if pedido.mesa:
+            pedido.mesa.status = "cozinha"
+
+        db.session.commit()
 
     # =====================================================
     # IMPRESSÃO - COZINHA
@@ -761,6 +775,105 @@ def carne_pronta(pedido_id):
 
     flash(
         "Carne liberada. Pedido enviado para a cozinha.",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "pedidos.detalhes",
+            pedido_id=pedido.id
+        )
+    )
+
+
+# =========================================================
+# CARNE PRONTA - PRATO ADICIONADO DEPOIS
+# =========================================================
+
+@pedidos_bp.route(
+    "/<int:pedido_id>/item/<int:item_id>/carne-pronta",
+    methods=["POST"]
+)
+@login_required
+def carne_pronta_item(pedido_id, item_id):
+
+    pedido = Pedido.query.get_or_404(
+        pedido_id
+    )
+
+    item = ItemPedido.query.get_or_404(
+        item_id
+    )
+
+    # =====================================================
+    # SEGURANÇA
+    # O ITEM PRECISA PERTENCER A ESTE PEDIDO
+    # =====================================================
+
+    if item.pedido_id != pedido.id:
+
+        flash(
+            "Este prato não pertence a este pedido.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "pedidos.detalhes",
+                pedido_id=pedido.id
+            )
+        )
+
+    # =====================================================
+    # SOMENTE PRATO ADICIONADO QUE ESTÁ NA CHURRASQUEIRA
+    # =====================================================
+
+    if item.status_preparo != "churrasqueira":
+
+        flash(
+            "Este prato não está aguardando a churrasqueira.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "pedidos.detalhes",
+                pedido_id=pedido.id
+            )
+        )
+
+    # =====================================================
+    # MUDA SOMENTE ESTE PRATO PARA COZINHA
+    # =====================================================
+
+    item.status_preparo = "servido"
+
+    db.session.commit()
+
+    # =====================================================
+    # ENVIA SOMENTE ESTE PRATO PARA FILA DA COZINHA
+    # =====================================================
+
+    try:
+
+        enfileirar_cozinha_itens(
+            pedido,
+            [item]
+        )
+
+        db.session.commit()
+
+    except Exception as erro:
+
+        db.session.rollback()
+
+        print(
+            "ERRO FILA IMPRESSÃO COZINHA ITEM:",
+            erro
+        )
+
+    flash(
+        f"Carne do prato {item.produto.nome} liberada para a cozinha.",
         "success"
     )
 
@@ -810,6 +923,16 @@ def servir(pedido_id):
     pedido.servido_em = datetime.utcnow()
 
     # =====================================================
+    # FINALIZA TAMBÉM OS PRATOS ADICIONADOS DEPOIS
+    # QUE JÁ CHEGARAM À COZINHA
+    # =====================================================
+
+    for item in pedido.itens:
+
+        if item.status_preparo == "cozinha":
+            item.status_preparo = "servido"
+
+    # =====================================================
     # ATUALIZA MESA
     # =====================================================
 
@@ -837,6 +960,330 @@ def servir(pedido_id):
             "pedidos.detalhes",
             pedido_id=pedido.id
         )
+    )
+
+
+# =========================================================
+# ADICIONAR NOVO PRATO À MESMA COMANDA
+# =========================================================
+
+@pedidos_bp.route(
+    "/<int:pedido_id>/adicionar-prato",
+    methods=["GET", "POST"]
+)
+@login_required
+def adicionar_prato(pedido_id):
+
+    pedido = Pedido.query.get_or_404(
+        pedido_id
+    )
+
+    # Somente pedido de mesa
+    if pedido.tipo_atendimento != "mesa":
+
+        flash(
+            "Adicionar prato está disponível somente para mesas.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "pedidos.detalhes",
+                pedido_id=pedido.id
+            )
+        )
+
+    # Pedido encerrado não recebe novo prato
+    if pedido.status in [
+        "finalizado",
+        "cancelado",
+        "fechamento"
+    ]:
+
+        flash(
+            "Este pedido não permite adicionar outro prato.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "pedidos.detalhes",
+                pedido_id=pedido.id
+            )
+        )
+
+    # =====================================================
+    # PRODUTOS
+    # =====================================================
+
+    carnes = (
+        Produto.query
+        .filter_by(
+            ativo=True,
+            tipo="carne"
+        )
+        .order_by(
+            Produto.ordem.asc(),
+            Produto.nome.asc()
+        )
+        .all()
+    )
+
+    acompanhamentos = (
+        Produto.query
+        .filter_by(
+            ativo=True,
+            tipo="acompanhamento"
+        )
+        .order_by(
+            Produto.ordem.asc(),
+            Produto.nome.asc()
+        )
+        .all()
+    )
+
+    adicionais = (
+        Produto.query
+        .filter_by(
+            ativo=True,
+            permite_adicional=True
+        )
+        .order_by(
+            Produto.ordem.asc(),
+            Produto.nome.asc()
+        )
+        .all()
+    )
+
+    # =====================================================
+    # SALVAR NOVO PRATO
+    # =====================================================
+
+    if request.method == "POST":
+
+        carne_id = request.form.get(
+            "carne_id",
+            type=int
+        )
+
+        if not carne_id:
+
+            flash(
+                "Selecione a carne do novo prato.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "pedidos.adicionar_prato",
+                    pedido_id=pedido.id
+                )
+            )
+
+        carne = db.session.get(
+            Produto,
+            carne_id
+        )
+
+        if (
+            not carne
+            or not carne.ativo
+            or carne.tipo != "carne"
+            or carne.preco is None
+        ):
+
+            flash(
+                "Carne selecionada inválida.",
+                "danger"
+            )
+
+            return redirect(
+                url_for(
+                    "pedidos.adicionar_prato",
+                    pedido_id=pedido.id
+                )
+            )
+
+        # =================================================
+        # CRIA O PRATO
+        # =================================================
+
+        valor_unitario = Decimal(
+            str(carne.preco)
+        )
+
+        item_prato = ItemPedido(
+            pedido_id=pedido.id,
+            produto_id=carne.id,
+            tipo_item="normal",
+            quantidade=1,
+            valor_unitario=valor_unitario,
+            valor_total=valor_unitario,
+            observacao="Novo prato adicionado à mesa",
+            status_preparo="churrasqueira"
+        )
+
+        db.session.add(
+            item_prato
+        )
+
+        db.session.flush()
+
+        itens_novos = [
+            item_prato
+        ]
+
+        valor_adicionado = valor_unitario
+
+        # =================================================
+        # ACOMPANHAMENTOS DESTE NOVO PRATO
+        # =================================================
+
+        acompanhamento_ids = request.form.getlist(
+            "acompanhamentos"
+        )
+
+        ids_ja_adicionados = set()
+
+        for acompanhamento_id in acompanhamento_ids:
+
+            try:
+
+                acompanhamento_id = int(
+                    acompanhamento_id
+                )
+
+            except (TypeError, ValueError):
+
+                continue
+
+            if acompanhamento_id in ids_ja_adicionados:
+                continue
+
+            acompanhamento = db.session.get(
+                Produto,
+                acompanhamento_id
+            )
+
+            if (
+                acompanhamento
+                and acompanhamento.ativo
+                and acompanhamento.tipo == "acompanhamento"
+            ):
+
+                vinculo = ItemPedidoAcompanhamento(
+                    item_pedido_id=item_prato.id,
+                    produto_id=acompanhamento.id
+                )
+
+                db.session.add(
+                    vinculo
+                )
+
+                ids_ja_adicionados.add(
+                    acompanhamento.id
+                )
+
+        # =================================================
+        # ADICIONAIS DO NOVO PRATO
+        # =================================================
+
+        for adicional in adicionais:
+
+            quantidade = request.form.get(
+                f"adicional_{adicional.id}",
+                0,
+                type=int
+            )
+
+            if (
+                not quantidade
+                or quantidade <= 0
+            ):
+                continue
+
+            if adicional.preco_adicional is None:
+                continue
+
+            valor_adicional = Decimal(
+                str(
+                    adicional.preco_adicional
+                )
+            )
+
+            valor_total_adicional = (
+                valor_adicional
+                * quantidade
+            )
+
+            item_adicional = ItemPedido(
+                pedido_id=pedido.id,
+                produto_id=adicional.id,
+                tipo_item="adicional",
+                quantidade=quantidade,
+                valor_unitario=valor_adicional,
+                valor_total=valor_total_adicional,
+                observacao="Adicional do novo prato"
+            )
+
+            db.session.add(
+                item_adicional
+            )
+
+            itens_novos.append(
+                item_adicional
+            )
+
+            valor_adicionado += (
+                valor_total_adicional
+            )
+
+        # =================================================
+        # ATUALIZA TOTAL DA COMANDA
+        # =================================================
+
+        pedido.subtotal = (
+            Decimal(
+                str(
+                    pedido.subtotal or 0
+                )
+            )
+            + valor_adicionado
+        )
+
+        pedido.total = (
+            Decimal(
+                str(
+                    pedido.total or 0
+                )
+            )
+            + valor_adicionado
+        )
+
+        db.session.commit()
+
+        flash(
+            "Novo prato adicionado à comanda.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "pedidos.detalhes",
+                pedido_id=pedido.id
+            )
+        )
+
+    # =====================================================
+    # GET
+    # =====================================================
+
+    return render_template(
+        "pedidos/adicionar_prato.html",
+        pedido=pedido,
+        carnes=carnes,
+        acompanhamentos=acompanhamentos,
+        adicionais=adicionais
     )
 
 
@@ -1281,6 +1728,84 @@ def finalizar(pedido_id):
 
 
 # =========================================================
+# HISTÓRICO / LISTAGEM DE MARMITEX
+# =========================================================
+
+@pedidos_bp.route("/marmitex")
+@login_required
+def listar_marmitex():
+
+    busca = (
+        request.args.get("busca", "")
+        .strip()
+    )
+
+    query = (
+        Pedido.query
+        .filter(
+            Pedido.tipo_atendimento == "marmitex"
+        )
+    )
+
+    if busca:
+
+        if busca.isdigit():
+
+            query = query.filter(
+                Pedido.numero_marmitex == int(busca)
+            )
+
+        else:
+
+            query = query.filter(
+                Pedido.nome_cliente.ilike(
+                    f"%{busca}%"
+                )
+            )
+
+    marmitex = (
+        query
+        .order_by(
+            Pedido.id.desc()
+        )
+        .all()
+    )
+
+    em_andamento = [
+        pedido
+        for pedido in marmitex
+        if pedido.status not in [
+            "servido",
+            "finalizado",
+            "cancelado"
+        ]
+    ]
+
+    prontos = [
+        pedido
+        for pedido in marmitex
+        if pedido.status == "servido"
+    ]
+
+    finalizados = [
+        pedido
+        for pedido in marmitex
+        if pedido.status in [
+            "finalizado",
+            "cancelado"
+        ]
+    ]
+
+    return render_template(
+        "pedidos/marmitex_lista.html",
+        busca=busca,
+        em_andamento=em_andamento,
+        prontos=prontos,
+        finalizados=finalizados
+    )
+
+
+# =========================================================
 # NOVO PEDIDO MARMITEX
 # =========================================================
 
@@ -1379,6 +1904,27 @@ def novo_marmitex():
 
     if request.method == "POST":
 
+        nome_cliente = (
+            request.form.get(
+                "nome_cliente",
+                ""
+            )
+            .strip()
+        )
+
+        if not nome_cliente:
+
+            flash(
+                "Informe o nome do cliente do Marmitex.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "pedidos.novo_marmitex"
+                )
+            )
+
         # =================================================
         # CARNE / PRATO
         # =================================================
@@ -1469,6 +2015,7 @@ def novo_marmitex():
             tipo_atendimento="marmitex",
             mesa_id=None,
             numero_marmitex=numero_marmitex,
+            nome_cliente=nome_cliente,
             usuario_id=current_user.id,
             status="cozinha",
             subtotal=Decimal("0.00"),
@@ -1510,12 +2057,14 @@ def novo_marmitex():
             )
 
             item_prato = ItemPedido(
-                pedido_id=novo_pedido.id,
+                pedido_id=pedido.id,
                 produto_id=carne.id,
                 tipo_item="normal",
-                quantidade=quantidade_prato,
-                valor_unitario=carne.preco,
-                valor_total=valor_prato
+                quantidade=1,
+                valor_unitario=valor_unitario,
+                valor_total=valor_unitario,
+                observacao="Novo prato adicionado à mesa",
+                status_preparo="churrasqueira"
             )
 
             db.session.add(

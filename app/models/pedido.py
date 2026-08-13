@@ -33,6 +33,12 @@ class Pedido(db.Model):
         nullable=True
     )
 
+    nome_cliente = db.Column(
+        db.String(120),
+        nullable=True,
+        index=True
+    )
+
     # =====================================================
     # GARÇOM
     # =====================================================

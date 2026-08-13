@@ -573,7 +573,7 @@
 
         }
 
-       /* ==================================================
+/* ==================================================
    PEDIR CONTA
 ================================================== */
 
@@ -766,6 +766,119 @@
 
 .btn-finalizar:active {
     transform: scale(.98);
+}
+
+.btn-adicionar-prato {
+    background: #17100c;
+    color: #ffffff !important;
+    text-decoration: none;
+
+    min-height: 48px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.btn-adicionar-prato:hover {
+    color: #ffffff;
+    text-decoration: none;
+    opacity: .92;
+}
+
+.rodape-inner {
+    display: grid;
+    grid-template-columns: minmax(180px, .7fr) minmax(300px, 1.7fr);
+    gap: 10px;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .rodape-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-adicionar-prato {
+        width: 100%;
+    }
+}
+
+
+/* ==================================================
+   FLUXO INDIVIDUAL - PRATO ADICIONADO DEPOIS
+================================================== */
+
+.fluxo-prato-individual {
+    margin-top: 10px;
+}
+
+.fluxo-prato-individual form {
+    margin: 0;
+}
+
+.btn-prato-carne {
+    width: 100%;
+    min-height: 42px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: #c2410c;
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    text-transform: uppercase;
+}
+
+.status-prato-cozinha {
+    width: 100%;
+    padding: 10px;
+
+    border-radius: 9px;
+
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    text-align: center;
+}
+
+.status-prato-servido {
+    width: 100%;
+    padding: 10px;
+
+    border-radius: 9px;
+
+    background: #dcfce7;
+    color: #166534;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+
+    .btn-prato-carne {
+        min-height: 46px;
+        font-size: 10px;
+    }
+
 }
 
 
@@ -1076,7 +1189,6 @@
                             Acompanhamentos
                         </small>
 
-
                         {% for acompanhamento in item.acompanhamentos %}
 
                             <span class="acompanhamento">
@@ -1089,9 +1201,61 @@
 
                 {% endif %}
 
+
+                {# =====================================================
+                   FLUXO INDIVIDUAL DO PRATO ADICIONADO DEPOIS
+                   ===================================================== #}
+
+                {% if item.status_preparo %}
+
+                    <div class="fluxo-prato-individual">
+
+                        {% if item.status_preparo == "churrasqueira" %}
+
+                            <form
+                                method="POST"
+                                action="{{
+                                    url_for(
+                                        'pedidos.carne_pronta_item',
+                                        pedido_id=pedido.id,
+                                        item_id=item.id
+                                    )
+                                }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="btn-prato-carne"
+                                >
+                                    🔥 CARNE PRONTA DESTE PRATO
+                                </button>
+
+                            </form>
+
+
+                        {% elif item.status_preparo == "cozinha" %}
+
+                            <div class="status-prato-cozinha">
+                                🍚 ESTE PRATO ESTÁ NA COZINHA
+                            </div>
+
+
+                        {% elif item.status_preparo == "servido" %}
+
+                            <div class="status-prato-servido">
+                                ✓ ESTE PRATO JÁ FOI SERVIDO
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
             </div>
 
         {% endfor %}
+
 
     </section>
 
@@ -1141,6 +1305,18 @@
 <div class="rodape">
 
     <div class="rodape-inner">
+
+        {% if pedido.tipo_atendimento == "mesa"
+              and pedido.status not in ["fechamento", "finalizado", "cancelado"] %}
+
+            <a
+                href="{{ url_for('pedidos.adicionar_prato', pedido_id=pedido.id) }}"
+                class="btn-acao btn-adicionar-prato"
+            >
+                🍽️ + ADICIONAR PRATO
+            </a>
+
+        {% endif %}
 
 
         {% if pedido.status == "churrasqueira" %}

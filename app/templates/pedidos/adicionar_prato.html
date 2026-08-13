@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Adicionar Prato | Bar do Cabeludo
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #171717;
+        }
+
+        .topbar {
+            min-height: 62px;
+            background: #17100c;
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 10px 14px;
+        }
+
+        .topbar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .topbar strong {
+            font-size: 13px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+
+            margin: 0 auto;
+            padding: 15px 12px 30px;
+        }
+
+        .hero {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .hero small {
+            display: block;
+            color: #777;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .hero h1 {
+            font-size: 21px;
+            margin-bottom: 5px;
+        }
+
+        .hero p {
+            color: #777;
+            font-size: 11px;
+        }
+
+        .secao {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+
+            overflow: hidden;
+            margin-bottom: 11px;
+        }
+
+        .secao-header {
+            padding: 11px 13px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .secao-header h2 {
+            font-size: 14px;
+        }
+
+        .secao-header small {
+            display: block;
+            margin-top: 3px;
+
+            color: #888;
+            font-size: 9px;
+        }
+
+        .secao-body {
+            padding: 11px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fill, minmax(150px, 1fr));
+
+            gap: 8px;
+        }
+
+        .opcao {
+            position: relative;
+        }
+
+        .opcao input[type="radio"],
+        .opcao input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .opcao label {
+            min-height: 58px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            border: 1px solid #ddd;
+            border-radius: 10px;
+
+            padding: 9px;
+
+            cursor: pointer;
+
+            transition: .15s;
+        }
+
+        .opcao label strong {
+            font-size: 12px;
+        }
+
+        .opcao label span {
+            margin-top: 4px;
+            color: #777;
+            font-size: 9px;
+        }
+
+        .opcao input:checked + label {
+            border: 2px solid #b45309;
+            background: #fff7ed;
+        }
+
+        .adicional {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+
+            padding: 9px 10px;
+            margin-bottom: 7px;
+        }
+
+        .adicional-info strong {
+            display: block;
+            font-size: 11px;
+        }
+
+        .adicional-info span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #777;
+            font-size: 9px;
+        }
+
+        .adicional input {
+            width: 60px;
+            height: 36px;
+
+            border: 1px solid #ccc;
+            border-radius: 8px;
+
+            text-align: center;
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .acoes {
+            position: sticky;
+            bottom: 0;
+
+            background: rgba(244,245,247,.96);
+
+            padding: 10px 0 0;
+
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 8px;
+        }
+
+        .btn {
+            min-height: 46px;
+
+            border: 0;
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+        .btn-voltar {
+            background: #e5e7eb;
+            color: #222;
+        }
+
+        .btn-salvar {
+            background: #b45309;
+            color: #fff;
+        }
+
+        @media (max-width: 520px) {
+
+            .container {
+                padding: 9px 8px 24px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .opcao label {
+                min-height: 54px;
+                padding: 7px;
+            }
+
+            .hero h1 {
+                font-size: 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a
+        href="{{ url_for('pedidos.detalhes', pedido_id=pedido.id) }}"
+    >
+        ← Voltar
+    </a>
+
+    <strong>
+        🍽️ Novo Prato
+    </strong>
+
+</header>
+
+
+<main class="container">
+
+    <div class="hero">
+
+        <small>
+            Comanda atual
+        </small>
+
+        <h1>
+            {{ pedido.mesa.nome }}
+        </h1>
+
+        <p>
+            Adicione outro prato completo sem abrir uma nova comanda.
+        </p>
+
+    </div>
+
+
+    <form method="POST">
+
+        <!-- =================================================
+             CARNE
+        ================================================== -->
+
+        <section class="secao">
+
+            <div class="secao-header">
+
+                <h2>
+                    🥩 Carne
+                </h2>
+
+                <small>
+                    Escolha a carne do novo prato
+                </small>
+
+            </div>
+
+            <div class="secao-body">
+
+                <div class="grid">
+
+                    {% for carne in carnes %}
+
+                        <div class="opcao">
+
+                            <input
+                                type="radio"
+                                name="carne_id"
+                                id="carne_{{ carne.id }}"
+                                value="{{ carne.id }}"
+                                required
+                            >
+
+                            <label for="carne_{{ carne.id }}">
+
+                                <strong>
+                                    {{ carne.nome }}
+                                </strong>
+
+                                <span>
+                                    R$ {{
+                                        "{:,.2f}".format(carne.preco or 0)
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ACOMPANHAMENTOS
+        ================================================== -->
+
+        <section class="secao">
+
+            <div class="secao-header">
+
+                <h2>
+                    🍚 Acompanhamentos
+                </h2>
+
+                <small>
+                    Selecione os acompanhamentos deste prato
+                </small>
+
+            </div>
+
+            <div class="secao-body">
+
+                <div class="grid">
+
+                    {% for acompanhamento in acompanhamentos %}
+
+                        <div class="opcao">
+
+                            <input
+                                type="checkbox"
+                                name="acompanhamentos"
+                                id="acomp_{{ acompanhamento.id }}"
+                                value="{{ acompanhamento.id }}"
+                            >
+
+                            <label for="acomp_{{ acompanhamento.id }}">
+
+                                <strong>
+                                    {{ acompanhamento.nome }}
+                                </strong>
+
+                            </label>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ADICIONAIS
+        ================================================== -->
+
+        {% if adicionais %}
+
+            <section class="secao">
+
+                <div class="secao-header">
+
+                    <h2>
+                        ➕ Adicionais
+                    </h2>
+
+                    <small>
+                        Opcional
+                    </small>
+
+                </div>
+
+                <div class="secao-body">
+
+                    {% for adicional in adicionais %}
+
+                        <div class="adicional">
+
+                            <div class="adicional-info">
+
+                                <strong>
+                                    {{ adicional.nome }}
+                                </strong>
+
+                                <span>
+                                    R$ {{
+                                        "{:,.2f}".format(
+                                            adicional.preco_adicional or 0
+                                        )
+                                        .replace(",", "X")
+                                        .replace(".", ",")
+                                        .replace("X", ".")
+                                    }}
+                                </span>
+
+                            </div>
+
+                            <input
+                                type="number"
+                                name="adicional_{{ adicional.id }}"
+                                min="0"
+                                value="0"
+                            >
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+
+        <div class="acoes">
+
+            <a
+                href="{{ url_for('pedidos.detalhes', pedido_id=pedido.id) }}"
+                class="btn btn-voltar"
+            >
+                CANCELAR
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-salvar"
+            >
+                + ADICIONAR PRATO
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
+
+</body>
+</html>

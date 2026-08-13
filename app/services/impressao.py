@@ -413,27 +413,61 @@ def montar_ticket_cozinha(pedido):
         linha()
     )
 
-    encontrou = False
+    # =====================================================
+    # SEPARA OS ACOMPANHAMENTOS POR PRATO
+    # =====================================================
 
+    encontrou = False
+    numero_prato = 0
 
     for item in pedido.itens:
 
-        for acompanhamento in item.acompanhamentos:
+        # Adicionais/consumos avulsos não viram "PRATO"
+        if item.tipo_item != "normal":
+            continue
 
-            encontrou = True
+        # Só mostra pratos que possuem acompanhamentos
+        if not item.acompanhamentos:
+            continue
+
+        numero_prato += 1
+        encontrou = True
+
+        produto = item.produto
+
+        conteudo.append(
+            f">>> PRATO {numero_prato} <<<"
+        )
+
+        if produto:
+
+            conteudo.append(
+                f"{item.quantidade}x "
+                f"{produto.nome.upper()}"
+            )
+
+        conteudo.append(
+            "-" * 24
+        )
+
+        for acompanhamento in item.acompanhamentos:
 
             conteudo.append(
                 f"[X] "
                 f"{acompanhamento.produto.nome.upper()}"
             )
 
+        conteudo.append("")
+
+    # =====================================================
+    # CASO NÃO EXISTA ACOMPANHAMENTO
+    # =====================================================
 
     if not encontrou:
 
         conteudo.append(
             "SEM ACOMPANHAMENTOS"
         )
-
 
     conteudo.append(
         linha()
@@ -568,7 +602,6 @@ def montar_ticket_adicional_cozinha(
     if not itens_novos:
         return None
 
-
     conteudo = []
 
     conteudo.append(
@@ -580,11 +613,15 @@ def montar_ticket_adicional_cozinha(
     )
 
     conteudo.append(
-        titulo("*** NOVO CONSUMO ***")
+        titulo("*** NOVO PRATO ***")
     )
 
     conteudo.append(
         titulo("COZINHA")
+    )
+
+    conteudo.append(
+        titulo("ACOMPANHAMENTOS")
     )
 
     conteudo.append(
@@ -609,24 +646,64 @@ def montar_ticket_adicional_cozinha(
         linha()
     )
 
+    # =====================================================
+    # MOSTRA CADA NOVO PRATO COM SEUS ACOMPANHAMENTOS
+    # =====================================================
+
+    encontrou = False
+    numero_prato = 0
 
     for item in itens_novos:
 
         produto = item.produto
 
-        texto = (
+        if not produto:
+            continue
+
+        numero_prato += 1
+        encontrou = True
+
+        conteudo.append(
+            f">>> NOVO PRATO {numero_prato} <<<"
+        )
+
+        conteudo.append(
             f"{item.quantidade}x "
             f"{produto.nome.upper()}"
         )
 
-        if item.tipo_item == "adicional":
-
-            texto += " [ADICIONAL]"
-
         conteudo.append(
-            texto
+            "-" * 24
         )
 
+        if item.acompanhamentos:
+
+            for acompanhamento in item.acompanhamentos:
+
+                conteudo.append(
+                    f"[X] "
+                    f"{acompanhamento.produto.nome.upper()}"
+                )
+
+        else:
+
+            conteudo.append(
+                "SEM ACOMPANHAMENTOS"
+            )
+
+        if item.observacao:
+
+            conteudo.append(
+                f"OBS: {item.observacao.upper()}"
+            )
+
+        conteudo.append("")
+
+    if not encontrou:
+
+        conteudo.append(
+            "SEM ITENS PARA PREPARAR"
+        )
 
     conteudo.append(
         linha()

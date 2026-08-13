@@ -56,6 +56,20 @@ class ItemPedido(db.Model):
         nullable=True
     )
 
+    # =====================================================
+    # CONTROLE DE FLUXO DO PRATO
+    # =====================================================
+
+    status_preparo = db.Column(
+        db.String(30),
+        nullable=True,
+        index=True
+    )
+    # None = item segue o fluxo global/original da comanda
+    # churrasqueira = prato adicionado depois, aguardando carne
+    # cozinha = carne pronta, aguardando acompanhamentos
+    # servido = prato adicional já entregue
+
     pedido = db.relationship(
         "Pedido",
         back_populates="itens"
