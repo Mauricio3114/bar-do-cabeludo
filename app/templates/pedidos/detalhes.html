@@ -913,7 +913,67 @@
 
 }
 
-    </style>
+/* ==================================================
+   CANCELAR PEDIDO
+================================================== */
+
+.cancelar-pedido-box {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+}
+
+.cancelar-pedido-box form {
+    width: 100%;
+    margin: 0;
+}
+
+.btn-cancelar-pedido {
+    width: 100%;
+    min-height: 44px;
+
+    border: 1px solid #fecaca;
+    border-radius: 11px;
+
+    background: #fff1f2;
+    color: #b91c1c;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 14px;
+
+    font-size: 10px;
+    font-weight: 900;
+    font-family: inherit;
+
+    text-transform: uppercase;
+
+    transition: .15s ease;
+}
+
+.btn-cancelar-pedido:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.btn-cancelar-pedido:active {
+    transform: scale(.98);
+}
+
+@media (max-width: 600px) {
+
+    .btn-cancelar-pedido {
+        min-height: 48px;
+        font-size: 11px;
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -1293,6 +1353,31 @@
         </div>
 
     </section>
+
+    {% if pedido.status not in ["finalizado", "cancelado"] %}
+
+        <div class="cancelar-pedido-box">
+
+            <form
+                method="POST"
+                action="{{ url_for('pedidos.cancelar_pedido', pedido_id=pedido.id) }}"
+                onsubmit="return confirm(
+                    'Cancelar este pedido?\n\nA mesa será liberada e será necessário fazer um novo pedido.'
+                );"
+            >
+
+                <button
+                    type="submit"
+                    class="btn-cancelar-pedido"
+                >
+                    🗑️ CANCELAR PEDIDO
+                </button>
+
+            </form>
+
+        </div>
+
+    {% endif %}
 
 
 </main>

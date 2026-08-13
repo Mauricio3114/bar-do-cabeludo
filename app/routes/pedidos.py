@@ -1592,6 +1592,77 @@ def adicionar_consumo(pedido_id):
 
 
 # =========================================================
+# CANCELAR PEDIDO
+# =========================================================
+
+@pedidos_bp.route(
+    "/pedidos/<int:pedido_id>/cancelar",
+    methods=["POST"]
+)
+@login_required
+def cancelar_pedido(pedido_id):
+
+    pedido = db.session.get(
+        Pedido,
+        pedido_id
+    )
+
+    if not pedido:
+
+        flash(
+            "Pedido não encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("mesas.listar")
+        )
+
+    # Pedido pago/finalizado não pode ser cancelado
+    if pedido.status == "finalizado":
+
+        flash(
+            "Pedido finalizado não pode ser cancelado.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "pedidos.detalhes",
+                pedido_id=pedido.id
+            )
+        )
+
+    # =====================================================
+    # LIBERA A MESA
+    # =====================================================
+
+    mesa = pedido.mesa
+
+    if mesa:
+
+        mesa.status = "livre"
+
+    # =====================================================
+    # CANCELA O PEDIDO
+    # Não apagamos fisicamente para preservar histórico
+    # =====================================================
+
+    pedido.status = "cancelado"
+
+    db.session.commit()
+
+    flash(
+        "Pedido cancelado. Mesa liberada.",
+        "success"
+    )
+
+    return redirect(
+        url_for("mesas.listar")
+    )
+
+
+# =========================================================
 # PEDIR CONTA / ENVIAR PARA FECHAMENTO
 # =========================================================
 
