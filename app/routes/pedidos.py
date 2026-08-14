@@ -2128,14 +2128,14 @@ def novo_marmitex():
             )
 
             item_prato = ItemPedido(
-                pedido_id=pedido.id,
+                pedido_id=novo_pedido.id,
                 produto_id=carne.id,
                 tipo_item="normal",
-                quantidade=1,
-                valor_unitario=valor_unitario,
-                valor_total=valor_unitario,
-                observacao="Novo prato adicionado à mesa",
-                status_preparo="churrasqueira"
+                quantidade=quantidade_prato,
+                valor_unitario=carne.preco,
+                valor_total=valor_prato,
+                observacao=None,
+                status_preparo=None
             )
 
             db.session.add(
