@@ -1185,9 +1185,8 @@
                 <select
                     class="select-carne prato-carne"
                     required
-                    onchange="calcularTotal()"
+                    onchange="alterarCarnePrato(this)"
                 >
-
                     <option value="">
                         Selecione a carne
                     </option>
@@ -1197,6 +1196,8 @@
                         <option
                             value="{{ produto.id }}"
                             data-preco="{{ produto.preco }}"
+                            data-misto="{{ '1' if produto.permite_escolha_carnes else '0' }}"
+                            data-qtd-carnes="{{ produto.quantidade_carnes_escolha or 0 }}"
                         >
                             {{ produto.nome }}
                             -
@@ -1210,8 +1211,92 @@
                         </option>
 
                     {% endfor %}
-
                 </select>
+
+
+                <!-- =========================================
+                    ESCOLHA DAS CARNES DO MISTO
+                ========================================== -->
+
+                <div
+                    class="misto-box"
+                    style="
+                        display:none;
+                        margin-top:10px;
+                        padding:10px;
+                        background:#fff7ed;
+                        border:1px solid #fed7aa;
+                        border-radius:10px;
+                    "
+                >
+
+                    <div
+                        style="
+                            font-size:10px;
+                            font-weight:900;
+                            color:#9a3412;
+                            margin-bottom:8px;
+                            text-transform:uppercase;
+                        "
+                    >
+                        🥩 Escolha as 2 carnes do misto
+                    </div>
+
+                    <div
+                        class="misto-escolhas"
+                        style="
+                            display:grid;
+                            grid-template-columns:1fr 1fr;
+                            gap:7px;
+                        "
+                    >
+
+                        <select
+                            class="select-carne misto-carne-1"
+                        >
+                            <option value="">
+                                1ª carne
+                            </option>
+
+                            {% for carne_opcao in carnes %}
+
+                                {% if not carne_opcao.permite_escolha_carnes %}
+
+                                    <option value="{{ carne_opcao.id }}">
+                                        {{ carne_opcao.nome }}
+                                    </option>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <select
+                            class="select-carne misto-carne-2"
+                        >
+                            <option value="">
+                                2ª carne
+                            </option>
+
+                            {% for carne_opcao in carnes %}
+
+                                {% if not carne_opcao.permite_escolha_carnes %}
+
+                                    <option value="{{ carne_opcao.id }}">
+                                        {{ carne_opcao.nome }}
+                                    </option>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -1318,6 +1403,28 @@
             contadorPratos +
             "_carne_id";
 
+        const mistoCarne1 =
+            card.querySelector(
+                ".misto-carne-1"
+            );
+
+        const mistoCarne2 =
+            card.querySelector(
+                ".misto-carne-2"
+            );
+
+
+        mistoCarne1.name =
+            "prato_" +
+            contadorPratos +
+            "_misto_carne_1_id";
+
+
+        mistoCarne2.name =
+            "prato_" +
+            contadorPratos +
+            "_misto_carne_2_id";
+
 
         const checks =
             card.querySelectorAll(
@@ -1365,6 +1472,69 @@
         calcularTotal();
 
     }
+
+    function alterarCarnePrato(select) {
+
+    const card =
+        select.closest(
+            ".prato-card"
+        );
+
+    if (!card) {
+        calcularTotal();
+        return;
+    }
+
+    const option =
+        select.options[
+            select.selectedIndex
+        ];
+
+    const mistoBox =
+        card.querySelector(
+            ".misto-box"
+        );
+
+    const carne1 =
+        card.querySelector(
+            ".misto-carne-1"
+        );
+
+    const carne2 =
+        card.querySelector(
+            ".misto-carne-2"
+        );
+
+
+    const ehMisto =
+        option
+        &&
+        option.dataset.misto === "1";
+
+
+    if (ehMisto) {
+
+        mistoBox.style.display =
+            "block";
+
+        carne1.required = true;
+        carne2.required = true;
+
+    } else {
+
+        mistoBox.style.display =
+            "none";
+
+        carne1.required = false;
+        carne2.required = false;
+
+        carne1.value = "";
+        carne2.value = "";
+
+    }
+
+    calcularTotal();
+}
 
 
     function removerPrato(botao) {

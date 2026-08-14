@@ -79,6 +79,22 @@ class Produto(db.Model):
     # outro
 
     # =====================================================
+    # PRATO MISTO
+    # =====================================================
+
+    permite_escolha_carnes = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False
+    )
+
+    quantidade_carnes_escolha = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
+
+    # =====================================================
     # OPERAÇÃO
     # =====================================================
 

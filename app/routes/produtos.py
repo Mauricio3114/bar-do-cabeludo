@@ -173,6 +173,26 @@ def novo():
             ""
         ).strip()
 
+        # =====================================================
+        # CONFIGURAÇÃO PRATO MISTO
+        # =====================================================
+
+        permite_escolha_carnes = (
+            request.form.get("permite_escolha_carnes")
+            == "on"
+        )
+
+        quantidade_carnes_escolha = request.form.get(
+            "quantidade_carnes_escolha",
+            2,
+            type=int
+        )
+
+        if not permite_escolha_carnes:
+            quantidade_carnes_escolha = 0
+        elif not quantidade_carnes_escolha or quantidade_carnes_escolha < 1:
+            quantidade_carnes_escolha = 2
+
         ordem = request.form.get(
             "ordem",
             0,
@@ -267,6 +287,7 @@ def novo():
             tipo=tipo,
             destino_preparo=destino_preparo,
             preco=preco,
+
             permite_adicional=permite_adicional,
             preco_adicional=(
                 preco_adicional
@@ -278,6 +299,10 @@ def novo():
                 if permite_adicional
                 else None
             ),
+
+            permite_escolha_carnes=permite_escolha_carnes,
+            quantidade_carnes_escolha=quantidade_carnes_escolha,
+
             ordem=ordem,
             ativo=True
         )
@@ -370,6 +395,22 @@ def editar(produto_id):
             ""
         ).strip()
 
+        permite_escolha_carnes = (
+            request.form.get("permite_escolha_carnes")
+            == "on"
+        )
+
+        quantidade_carnes_escolha = request.form.get(
+            "quantidade_carnes_escolha",
+            2,
+            type=int
+        )
+
+        if not permite_escolha_carnes:
+            quantidade_carnes_escolha = 0
+        elif not quantidade_carnes_escolha or quantidade_carnes_escolha < 1:
+            quantidade_carnes_escolha = 2
+
         ordem = request.form.get(
             "ordem",
             0,
@@ -455,6 +496,16 @@ def editar(produto_id):
             unidade_adicional
             if permite_adicional
             else None
+        )
+
+        produto.permite_adicional = permite_adicional
+
+        produto.permite_escolha_carnes = (
+            permite_escolha_carnes
+        )
+
+        produto.quantidade_carnes_escolha = (
+            quantidade_carnes_escolha
         )
 
         produto.ordem = ordem

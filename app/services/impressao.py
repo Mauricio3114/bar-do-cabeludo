@@ -223,6 +223,9 @@ def montar_ticket_churrasqueira(
 
         produto = item.produto
 
+        if not produto:
+            continue
+
         texto = (
             f"{item.quantidade}x "
             f"{produto.nome.upper()}"
@@ -235,6 +238,36 @@ def montar_ticket_churrasqueira(
         conteudo.append(
             texto
         )
+
+        # =================================================
+        # CARNES ESCOLHIDAS DO PRATO MIXTO
+        # =================================================
+
+        carne_escolha_1 = getattr(
+            item,
+            "carne_escolha_1",
+            None
+        )
+
+        carne_escolha_2 = getattr(
+            item,
+            "carne_escolha_2",
+            None
+        )
+
+        if carne_escolha_1:
+
+            conteudo.append(
+                f"  > 1a CARNE: "
+                f"{carne_escolha_1.nome.upper()}"
+            )
+
+        if carne_escolha_2:
+
+            conteudo.append(
+                f"  > 2a CARNE: "
+                f"{carne_escolha_2.nome.upper()}"
+                )
 
 
     conteudo.append(
@@ -551,6 +584,9 @@ def montar_ticket_adicional_churrasqueira(
 
         produto = item.produto
 
+        if not produto:
+            continue
+
         texto = (
             f"{item.quantidade}x "
             f"{produto.nome.upper()}"
@@ -564,6 +600,35 @@ def montar_ticket_adicional_churrasqueira(
             texto
         )
 
+        # =================================================
+        # CARNES ESCOLHIDAS DO PRATO MIXTO
+        # =================================================
+
+        carne_escolha_1 = getattr(
+            item,
+            "carne_escolha_1",
+            None
+        )
+
+        carne_escolha_2 = getattr(
+            item,
+            "carne_escolha_2",
+            None
+        )
+
+        if carne_escolha_1:
+
+            conteudo.append(
+                f"  > 1a CARNE: "
+                f"{carne_escolha_1.nome.upper()}"
+            )
+
+        if carne_escolha_2:
+
+            conteudo.append(
+                f"  > 2a CARNE: "
+                f"{carne_escolha_2.nome.upper()}"
+            )
 
     conteudo.append(
         linha()

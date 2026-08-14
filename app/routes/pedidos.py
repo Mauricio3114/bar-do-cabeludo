@@ -249,6 +249,94 @@ def mesa(mesa_id):
             ):
                 continue
 
+            # =================================================
+            # CARNES ESCOLHIDAS NO MIXTO
+            # =================================================
+
+            carne_escolha_1 = None
+            carne_escolha_2 = None
+
+            if carne.permite_escolha_carnes:
+
+                carne_escolha_1_id = request.form.get(
+                    f"prato_{indice}_misto_carne_1_id",
+                    type=int
+                )
+
+                carne_escolha_2_id = request.form.get(
+                    f"prato_{indice}_misto_carne_2_id",
+                    type=int
+                )
+
+                if (
+                    not carne_escolha_1_id
+                    or not carne_escolha_2_id
+                ):
+
+                    flash(
+                        f"Escolha as 2 carnes do {carne.nome}.",
+                        "danger"
+                    )
+
+                    return redirect(
+                        url_for(
+                            "pedidos.mesa",
+                            mesa_id=mesa.id
+                        )
+                    )
+
+                carne_escolha_1 = db.session.get(
+                    Produto,
+                    carne_escolha_1_id
+                )
+
+                carne_escolha_2 = db.session.get(
+                    Produto,
+                    carne_escolha_2_id
+                )
+
+                if (
+                    not carne_escolha_1
+                    or not carne_escolha_1.ativo
+                    or carne_escolha_1.tipo != "carne"
+                    or carne_escolha_1.permite_escolha_carnes
+                ):
+
+                    flash(
+                        "A 1ª carne escolhida para o Mixto é inválida.",
+                        "danger"
+                    )
+
+                    return redirect(
+                        url_for(
+                            "pedidos.mesa",
+                            mesa_id=mesa.id
+                        )
+                    )
+
+                if (
+                    not carne_escolha_2
+                    or not carne_escolha_2.ativo
+                    or carne_escolha_2.tipo != "carne"
+                    or carne_escolha_2.permite_escolha_carnes
+                ):
+
+                    flash(
+                        "A 2ª carne escolhida para o Mixto é inválida.",
+                        "danger"
+                    )
+
+                    return redirect(
+                        url_for(
+                            "pedidos.mesa",
+                            mesa_id=mesa.id
+                        )
+                    )
+
+            # =================================================
+            # ACOMPANHAMENTOS DO PRATO
+            # =================================================
+
             acompanhamento_ids = request.form.getlist(
                 f"prato_{indice}_acompanhamentos"
             )
@@ -269,7 +357,6 @@ def mesa(mesa_id):
 
                     continue
 
-                # Evita acompanhamento duplicado
                 if acompanhamento_id in ids_ja_adicionados:
                     continue
 
@@ -295,6 +382,8 @@ def mesa(mesa_id):
             pratos_selecionados.append(
                 {
                     "carne": carne,
+                    "carne_escolha_1": carne_escolha_1,
+                    "carne_escolha_2": carne_escolha_2,
                     "acompanhamentos": acompanhamentos_do_prato
                 }
             )
@@ -372,6 +461,14 @@ def mesa(mesa_id):
 
             carne = prato["carne"]
 
+            carne_escolha_1 = prato.get(
+                "carne_escolha_1"
+            )
+
+            carne_escolha_2 = prato.get(
+                "carne_escolha_2"
+            )
+
             acompanhamentos_do_prato = (
                 prato["acompanhamentos"]
             )
@@ -394,7 +491,19 @@ def mesa(mesa_id):
                 tipo_item="normal",
                 quantidade=quantidade,
                 valor_unitario=valor_unitario,
-                valor_total=valor_prato
+                valor_total=valor_prato,
+
+                carne_escolha_1_id=(
+                    carne_escolha_1.id
+                    if carne_escolha_1
+                    else None
+                ),
+
+                carne_escolha_2_id=(
+                    carne_escolha_2.id
+                    if carne_escolha_2
+                    else None
+                )
             )
 
             db.session.add(
@@ -1104,6 +1213,90 @@ def adicionar_prato(pedido_id):
                 )
             )
 
+                # =================================================
+        # CARNES ESCOLHIDAS DO MIXTO
+        # =================================================
+
+        carne_escolha_1 = None
+        carne_escolha_2 = None
+
+        if carne.permite_escolha_carnes:
+
+            carne_escolha_1_id = request.form.get(
+                "misto_carne_1_id",
+                type=int
+            )
+
+            carne_escolha_2_id = request.form.get(
+                "misto_carne_2_id",
+                type=int
+            )
+
+            if (
+                not carne_escolha_1_id
+                or not carne_escolha_2_id
+            ):
+
+                flash(
+                    f"Escolha as 2 carnes do {carne.nome}.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for(
+                        "pedidos.adicionar_prato",
+                        pedido_id=pedido.id
+                    )
+                )
+
+            carne_escolha_1 = db.session.get(
+                Produto,
+                carne_escolha_1_id
+            )
+
+            carne_escolha_2 = db.session.get(
+                Produto,
+                carne_escolha_2_id
+            )
+
+            if (
+                not carne_escolha_1
+                or not carne_escolha_1.ativo
+                or carne_escolha_1.tipo != "carne"
+                or carne_escolha_1.permite_escolha_carnes
+            ):
+
+                flash(
+                    "A 1ª carne escolhida para o MIXTO é inválida.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for(
+                        "pedidos.adicionar_prato",
+                        pedido_id=pedido.id
+                    )
+                )
+
+            if (
+                not carne_escolha_2
+                or not carne_escolha_2.ativo
+                or carne_escolha_2.tipo != "carne"
+                or carne_escolha_2.permite_escolha_carnes
+            ):
+
+                flash(
+                    "A 2ª carne escolhida para o MIXTO é inválida.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for(
+                        "pedidos.adicionar_prato",
+                        pedido_id=pedido.id
+                    )
+                )
+
         # =================================================
         # CRIA O PRATO
         # =================================================
@@ -1120,7 +1313,19 @@ def adicionar_prato(pedido_id):
             valor_unitario=valor_unitario,
             valor_total=valor_unitario,
             observacao="Novo prato adicionado à mesa",
-            status_preparo="churrasqueira"
+            status_preparo="churrasqueira",
+
+            carne_escolha_1_id=(
+                carne_escolha_1.id
+                if carne_escolha_1
+                else None
+            ),
+
+            carne_escolha_2_id=(
+                carne_escolha_2.id
+                if carne_escolha_2
+                else None
+            )
         )
 
         db.session.add(

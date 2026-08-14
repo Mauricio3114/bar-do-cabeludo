@@ -483,6 +483,67 @@
         }
 
         /* =================================================
+        PRATO MIXTO
+        ================================================= */
+
+        .misto-box {
+            display: none;
+            background: #fff7ed;
+            border: 2px solid #b45309;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .misto-box.ativo {
+            display: block;
+        }
+
+        .misto-titulo {
+            font-size: 12px;
+            font-weight: 900;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+
+        .misto-subtitulo {
+            font-size: 9px;
+            color: #78716c;
+            margin-bottom: 10px;
+        }
+
+        .misto-escolhas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .misto-campo label {
+            display: block;
+            font-size: 9px;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .misto-campo select {
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #d6d3d1;
+            border-radius: 9px;
+            background: #fff;
+            padding: 0 9px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        @media (max-width: 520px) {
+            .misto-escolhas {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =================================================
            MOBILE
         ================================================= */
 
@@ -680,6 +741,7 @@
                                         id="carne_{{ produto.id }}"
                                         value="{{ produto.id }}"
                                         data-preco="{{ produto.preco }}"
+                                        data-misto="{{ '1' if produto.permite_escolha_carnes else '0' }}"
                                     >
 
                                     <label for="carne_{{ produto.id }}">
@@ -703,6 +765,88 @@
                                 </div>
 
                             {% endfor %}
+
+                        </div>
+
+                        <div
+                            class="misto-box"
+                            id="mistoBox"
+                        >
+
+                            <div class="misto-titulo">
+                                🥩 ESCOLHA AS 2 CARNES DO MIXTO
+                            </div>
+
+                            <div class="misto-subtitulo">
+                                Selecione as duas carnes que irão para a churrasqueira.
+                            </div>
+
+                            <div class="misto-escolhas">
+
+                                <div class="misto-campo">
+
+                                    <label>
+                                        1ª CARNE
+                                    </label>
+
+                                    <select
+                                        name="misto_carne_1_id"
+                                        id="mistoCarne1"
+                                    >
+
+                                        <option value="">
+                                            Selecione
+                                        </option>
+
+                                        {% for opcao_carne in carnes %}
+
+                                            {% if not opcao_carne.permite_escolha_carnes %}
+
+                                                <option value="{{ opcao_carne.id }}">
+                                                    {{ opcao_carne.nome }}
+                                                </option>
+
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="misto-campo">
+
+                                    <label>
+                                        2ª CARNE
+                                    </label>
+
+                                    <select
+                                        name="misto_carne_2_id"
+                                        id="mistoCarne2"
+                                    >
+
+                                        <option value="">
+                                            Selecione
+                                        </option>
+
+                                        {% for opcao_carne in carnes %}
+
+                                            {% if not opcao_carne.permite_escolha_carnes %}
+
+                                                <option value="{{ opcao_carne.id }}">
+                                                    {{ opcao_carne.nome }}
+                                                </option>
+
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
@@ -1349,6 +1493,83 @@
         );
 
     }
+
+    // =================================================
+    // PRATO MIXTO
+    // =================================================
+
+    const carnesMarmitex =
+        document.querySelectorAll(
+            'input[name="carne_id"]'
+        );
+
+    const mistoBox =
+        document.getElementById(
+            "mistoBox"
+        );
+
+    const mistoCarne1 =
+        document.getElementById(
+            "mistoCarne1"
+        );
+
+    const mistoCarne2 =
+        document.getElementById(
+            "mistoCarne2"
+        );
+
+
+    function atualizarMisto() {
+
+        const selecionada =
+            document.querySelector(
+                'input[name="carne_id"]:checked'
+            );
+
+        const ehMisto =
+            selecionada
+            && selecionada.dataset.misto === "1";
+
+
+        if (ehMisto) {
+
+            mistoBox.classList.add(
+                "ativo"
+            );
+
+            mistoCarne1.required = true;
+            mistoCarne2.required = true;
+
+        } else {
+
+            mistoBox.classList.remove(
+                "ativo"
+            );
+
+            mistoCarne1.required = false;
+            mistoCarne2.required = false;
+
+            mistoCarne1.value = "";
+            mistoCarne2.value = "";
+
+        }
+
+    }
+
+
+    carnesMarmitex.forEach(
+        function (carne) {
+
+            carne.addEventListener(
+                "change",
+                atualizarMisto
+            );
+
+        }
+    );
+
+
+    atualizarMisto();
 
 </script>
 

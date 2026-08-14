@@ -715,6 +715,69 @@
 
                 </div>
 
+                <!-- =====================================================
+                    CONFIGURAÇÃO DE PRATO MISTO
+                ===================================================== -->
+
+                <div
+                    class="adicional-box"
+                    id="boxMisto"
+                    style="margin-top:15px;"
+                >
+
+                    <div class="switch-line">
+
+                        <input
+                            type="checkbox"
+                            id="permite_escolha_carnes"
+                            name="permite_escolha_carnes"
+
+                            {% if produto and produto.permite_escolha_carnes %}
+                                checked
+                            {% elif request.form.get('permite_escolha_carnes') %}
+                                checked
+                            {% endif %}
+                        >
+
+                        <label for="permite_escolha_carnes">
+                            🥩 Este produto permite escolher carnes
+                        </label>
+
+                    </div>
+
+
+                    <div
+                        class="adicional-campos"
+                        id="camposMisto"
+                    >
+
+                        <div class="field">
+
+                            <label>
+                                Quantidade de carnes para escolher
+                            </label>
+
+                            <input
+                                type="number"
+                                name="quantidade_carnes_escolha"
+                                min="1"
+                                max="10"
+                                value="{{
+                                    produto.quantidade_carnes_escolha
+                                    if produto
+                                    else request.form.get(
+                                        'quantidade_carnes_escolha',
+                                        2
+                                    )
+                                }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
 
                 <div class="acoes">
 
@@ -776,6 +839,42 @@
 
 
         atualizarAdicional();
+
+        const checkboxMisto =
+            document.getElementById(
+                "permite_escolha_carnes"
+            );
+
+        const camposMisto =
+            document.getElementById(
+                "camposMisto"
+            );
+
+
+        function atualizarMisto() {
+
+            if (checkboxMisto.checked) {
+
+                camposMisto.style.display =
+                    "grid";
+
+            } else {
+
+                camposMisto.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        checkboxMisto.addEventListener(
+            "change",
+            atualizarMisto
+        );
+
+
+        atualizarMisto();
 
     </script>
 

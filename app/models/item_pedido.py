@@ -70,13 +70,34 @@ class ItemPedido(db.Model):
     # cozinha = carne pronta, aguardando acompanhamentos
     # servido = prato adicional já entregue
 
+    # =====================================================
+    # CARNES ESCOLHIDAS NO PRATO MISTO
+    # =====================================================
+
+    carne_escolha_1_id = db.Column(
+        db.Integer,
+        db.ForeignKey("produtos.id"),
+        nullable=True
+    )
+
+    carne_escolha_2_id = db.Column(
+        db.Integer,
+        db.ForeignKey("produtos.id"),
+        nullable=True
+    )
+
+    # =====================================================
+    # RELACIONAMENTOS
+    # =====================================================
+
     pedido = db.relationship(
         "Pedido",
         back_populates="itens"
     )
 
     produto = db.relationship(
-        "Produto"
+        "Produto",
+        foreign_keys=[produto_id]
     )
 
     acompanhamentos = db.relationship(
@@ -84,6 +105,16 @@ class ItemPedido(db.Model):
         back_populates="item_pedido",
         cascade="all, delete-orphan",
         lazy=True
+    )
+
+    carne_escolha_1 = db.relationship(
+        "Produto",
+        foreign_keys=[carne_escolha_1_id]
+    )
+
+    carne_escolha_2 = db.relationship(
+        "Produto",
+        foreign_keys=[carne_escolha_2_id]
     )
 
     def __repr__(self):
